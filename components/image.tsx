@@ -8,14 +8,16 @@ import { getBunnyImageUrl } from '@/lib/image-optimizer';
  * Automatically optimizes BunnyCDN images
  * Supports ALL Next.js Image props including fill, sizes, priority, etc.
  */
-type ExtendedImageProps = NextImageProps & {
+type ExtendedImageProps = Omit<NextImageProps, 'fetchPriority'> & {
   // Legacy/optional props some codebases still pass (Next may not type these anymore)
   layout?: any;
   objectFit?: any;
   objectPosition?: any;
   lazyBoundary?: string;
   lazyRoot?: string;
-  fetchPriority?: any;
+
+  // Allow string, but we'll validate before passing to NextImage
+  fetchPriority?: 'auto' | 'high' | 'low' | string;
 };
 
 export default function Image({
@@ -69,6 +71,12 @@ export default function Image({
     shouldOptimize && numericWidth
       ? getBunnyImageUrl(src, numericWidth, imageQuality)
       : src;
+  
+      const safeFetchPriority =
+  fetchPriority === 'high' || fetchPriority === 'low' || fetchPriority === 'auto'
+    ? fetchPriority
+    : undefined;
+
 
   return (
     <NextImage
@@ -93,7 +101,8 @@ export default function Image({
       objectPosition={objectPosition}
       lazyBoundary={lazyBoundary}
       lazyRoot={lazyRoot}
-      fetchPriority={fetchPriority}
+     fetchPriority={safeFetchPriority}
+
       className={className}
       style={style}
       {...restProps}
