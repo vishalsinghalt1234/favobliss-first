@@ -6,15 +6,24 @@ import { getBunnyImageUrl } from '@/lib/image-optimizer';
 /**
  * Drop-in replacement for Next.js Image component
  * Automatically optimizes BunnyCDN images
- * Supports ALL Next.js Image props including fill, layout, sizes, etc.
- * No code changes needed - just update imports!
+ * Supports ALL Next.js Image props including fill, sizes, priority, etc.
  */
-export default function Image({ 
-  src, 
-  alt, 
+type ExtendedImageProps = NextImageProps & {
+  // Legacy/optional props some codebases still pass (Next may not type these anymore)
+  layout?: any;
+  objectFit?: any;
+  objectPosition?: any;
+  lazyBoundary?: string;
+  lazyRoot?: string;
+  fetchPriority?: any;
+};
+
+export default function Image({
+  src,
+  alt,
   width,
   height,
-  quality = 85,
+  quality,
   fill,
   sizes,
   priority,
@@ -33,22 +42,33 @@ export default function Image({
   fetchPriority,
   className,
   style,
-  ...restProps 
-}: NextImageProps) {
-  // Only optimize if:
-  // 1. src is a string (not imported image)
-  // 2. unoptimized prop is not set to true
-  // 3. We have width or fill is true
+  ...restProps
+}: ExtendedImageProps) {
+  // Convert `number | `${number}` | undefined` -> `number | undefined`
+  const toNumber = (v: unknown): number | undefined => {
+    if (typeof v === 'number') return v;
+    if (typeof v === 'string' && v.trim() !== '') {
+      const n = Number(v);
+      return Number.isFinite(n) ? n : undefined;
+    }
+    return undefined;
+  };
+
+  // Optimize only when:
+  // 1) src is a string (not a static import)
+  // 2) unoptimized is not true
   const shouldOptimize = typeof src === 'string' && !unoptimized;
-  
-  const optimizedSrc = shouldOptimize
-    ? getBunnyImageUrl(
-        src, 
-        // Use width for optimization, unless using fill layout
-        typeof width === 'number' && !fill ? width : undefined,
-        quality
-      )
-    : src;
+
+  // Use provided quality (string/number) or default
+  const imageQuality: number = toNumber(quality) ?? 85;
+
+  // Use width if available and not using fill layout
+  const numericWidth = !fill ? toNumber(width) : undefined;
+
+  const optimizedSrc =
+    shouldOptimize && numericWidth
+      ? getBunnyImageUrl(src, numericWidth, imageQuality)
+      : src;
 
   return (
     <NextImage
@@ -67,7 +87,7 @@ export default function Image({
       onLoadingComplete={onLoadingComplete}
       onLoad={onLoad}
       onError={onError}
-      // @ts-ignore - legacy props that might still be used
+      // legacy passthrough (may be ignored by Next internally)
       layout={layout}
       objectFit={objectFit}
       objectPosition={objectPosition}
