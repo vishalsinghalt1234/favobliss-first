@@ -1,4 +1,4 @@
-import Image from "next/image";
+import Image from '@/components/image';
 import { VariantImage } from "@/types";
 import { TabsTrigger } from "../ui/tabs";
 import { FaPlay } from "react-icons/fa";

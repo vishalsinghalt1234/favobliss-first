@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import Image from '@/components/image';
 import { Product, ProductApiResponse, Variant, VariantImage } from "@/types";
 import { Tabs, TabsContent, TabsList } from "@/components/ui/tabs";
 import { GalleryTab } from "./gallery-tab";

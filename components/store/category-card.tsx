@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import Image from '@/components/image';
 import { Cormorant } from "next/font/google";
 import { useRouter } from "next/navigation";
 

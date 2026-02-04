@@ -1,7 +1,7 @@
 "use client";
 
 import { Brand } from "@/types";
-import Image from "next/image";
+import Image from '@/components/image';
 import { useRouter } from "next/navigation";
 import React from "react";
 import { Swiper, SwiperSlide } from "swiper/react";

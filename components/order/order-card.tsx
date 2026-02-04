@@ -1,7 +1,7 @@
 // Updated frontend: app/order/order-card.tsx
 "use client";
 
-import Image from "next/image";
+import Image from '@/components/image';
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { Comment, OrderProduct } from "@prisma/client";

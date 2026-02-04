@@ -6,7 +6,7 @@ interface FormWrapperProps {
     showSocial?: boolean;
 }
 
-import Image from "next/image";
+import Image from '@/components/image';
 
 import {
     Card,

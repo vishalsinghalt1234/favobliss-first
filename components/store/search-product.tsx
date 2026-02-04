@@ -1,7 +1,7 @@
 "use client";
 
 import { Product, LocationGroup } from "@/types";
-import Image from "next/image";
+import Image from '@/components/image';
 import { formatter } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { MouseEventHandler, useState, useEffect } from "react";

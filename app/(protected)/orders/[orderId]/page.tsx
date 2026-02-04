@@ -1,7 +1,7 @@
 import { getOrder, getOrderProductById } from "@/actions/order";
 import { Container } from "@/components/ui/container";
 import { cn, formatter, formatDeliveryDate } from "@/lib/utils";
-import Image from "next/image";
+import Image from '@/components/image';
 import { format, addHours, addDays } from "date-fns";
 import { ShippingAddress } from "@/components/order/shipping-address";
 import { Rating } from "@/components/order/rating";
@@ -24,6 +24,7 @@ import Link from "next/link";
 import { CancelOrderButton } from "@/components/store/CancelOrderButton";
 import { DownloadInvoiceButton } from "@/components/store/DownloadInvoiceButton";
 import { OrderProduct } from "@prisma/client";
+import { OptimizedImage } from "@/components/OptimizedImage";
 
 interface OrderDetailsPageProps {
   params: { orderId: string };
@@ -335,7 +336,7 @@ const OrderDetailsPage = async ({ params }: OrderDetailsPageProps) => {
                       <div className="flex gap-6">
                         <div className="flex-shrink-0">
                           <div className="w-32 h-40 rounded-lg overflow-hidden bg-gray-100">
-                            <Image
+                            <OptimizedImage
                               src={product.productImage || ""}
                               width={128}
                               height={160}

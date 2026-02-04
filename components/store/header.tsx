@@ -15,7 +15,7 @@ import { useSession } from "next-auth/react";
 import { useAddress } from "@/hooks/use-address";
 import PincodeDialog from "./PincodeDialog";
 import { getLocationGroups } from "@/actions/get-location-group";
-import Image from "next/image";
+import Image from '@/components/image';
 import { useDebouncedCallback } from "@/hooks/use-debouncecallback";
 
 const searchCategories = [

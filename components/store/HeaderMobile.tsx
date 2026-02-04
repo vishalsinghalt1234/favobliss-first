@@ -17,7 +17,7 @@ import { Account } from "@/components/account";
 import { useCart } from "@/hooks/use-cart";
 import { useRouter } from "next/navigation";
 import { useDebounce } from "@/hooks/use-debounce";
-import Image from "next/image";
+import Image from '@/components/image';
 import { useDebouncedCallback } from "@/hooks/use-debouncecallback";
 
 const searchCategories = [

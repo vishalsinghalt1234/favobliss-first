@@ -11,7 +11,7 @@ import { MobileFilters } from "./_components/mobile-filters";
 import { PaginationComponent } from "./_components/pagination";
 import { Metadata, ResolvingMetadata } from "next";
 import { PriceRange, Location, Brand } from "@/types";
-import Image from "next/image";
+import Image from '@/components/image';
 import Breadcrumb from "@/components/store/Breadcrumbs";
 import { getSubCategoryBySlug } from "@/actions/get-subcategory";
 import { getLocationGroups } from "@/actions/get-location-group";

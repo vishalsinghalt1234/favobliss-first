@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import Image from "next/image";
+import Image from '@/components/image';
 import { LocationGroup, Product } from "@/types";
 import { ProductCard } from "./product-card";
 import { Swiper, SwiperSlide } from "swiper/react";

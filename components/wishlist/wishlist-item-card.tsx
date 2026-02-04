@@ -2,7 +2,7 @@
 
 import { Product } from "@/types";
 import { X } from "lucide-react";
-import Image from "next/image";
+import Image from '@/components/image';
 import { Button } from "../ui/button";
 import { useRouter } from "next/navigation";
 import { MouseEventHandler } from "react";

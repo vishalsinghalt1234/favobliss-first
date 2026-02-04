@@ -1,7 +1,7 @@
 "use client";
 
 import { Product, LocationGroup, Variant } from "@/types"; // Assuming Variant is imported or defined as type Variant = Product['variants'][number];
-import Image from "next/image";
+import Image from '@/components/image';
 import { formatter } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { MouseEventHandler, useState, useEffect } from "react";

@@ -2,7 +2,7 @@
 
 import { VariantImage } from "@/types";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import Image from "next/image";
+import Image from '@/components/image';
 import { useEffect, useState, useRef } from "react";
 import { FaPlay, FaPause } from "react-icons/fa";
 

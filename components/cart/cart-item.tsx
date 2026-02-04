@@ -2,7 +2,7 @@
 
 import { CartSelectedItem, Product } from "@/types";
 import { X, Heart } from "lucide-react";
-import Image from "next/image";
+import Image from '@/components/image';
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { formatDeliveryDate, formatter } from "@/lib/utils";

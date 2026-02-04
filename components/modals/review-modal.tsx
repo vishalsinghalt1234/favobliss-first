@@ -9,7 +9,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
-import Image from "next/image";
+import Image from '@/components/image';
 import { Comment } from "@prisma/client";
 import { FaStar } from "react-icons/fa";
 import { Star } from "lucide-react";
