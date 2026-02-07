@@ -177,7 +177,7 @@ const LandingPage = async ({ params }: { params: { storeId: string } }) => {
             /> */}
               <PremiumProductsSection
                 products={premiumProducts}
-                backgroundColor="#534747"
+                backgroundColor="#9fd6ff"
               />
               <ProductList
                 title="Favobliss's Choice"

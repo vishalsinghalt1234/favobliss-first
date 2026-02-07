@@ -17,7 +17,7 @@ interface PremiumProductsSectionProps {
 
 const PremiumProductsSection: React.FC<PremiumProductsSectionProps> = ({
   products,
-  backgroundColor = "#6B5B73",
+  backgroundColor = "#9fd6ff",
   className = "",
 }) => {
   return (
@@ -25,6 +25,16 @@ const PremiumProductsSection: React.FC<PremiumProductsSectionProps> = ({
       className={`rounded-3xl w-full max-w-full px-4 py-8 md:p-8 md:pt-[48px] pt-[40px] ${className}`}
       style={{ backgroundColor }}
     >
+            {/* Top Banner */}
+      <div className="w-full mb-6">
+        <img
+          src="/assets/home-banner/home-banner-2.jpeg"
+          alt="Home Banner"
+          className="w-full h-[140px] sm:h-[170px] md:h-[220px] object-cover rounded-2xl"
+          loading="lazy"
+        />
+      </div>
+
       <div className="flex overflow-x-auto space-x-6 pb-1 md:pb-4 scrollbar-hide snap-x snap-mandatory justify-between">
         {products.map((product) => (
           <div

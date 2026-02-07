@@ -35,7 +35,7 @@ export const ProductList = ({
     <div className="space-y-2 md:space-y-8">
       {title.length > 0 && (
         <div className="relative flex items-center justify-center">
-          <h3 className="text-xl md:text-3xl lg:text-4xl mb-0 md:mb-5 text-center w-[50%]">
+          <h3 className="text-xl md:text-3xl lg:text-4xl mb-0 md:mb-5 font-semibold text-center w-[50%]">
             {title} {title === "Recently Viewed" && `by ${userName}`}
           </h3>
 
