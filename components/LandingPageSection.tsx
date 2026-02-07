@@ -29,7 +29,7 @@ const LandingPageSection: React.FC<HomeAppliancesSectionProps> = ({
     <div className={`rounded-2xl p-3 md:p-6 w-full max-w-full ${className}`}>
       {title?.length > 0 && (
         <div className="relative flex items-center justify-center pb-2">
-          <h2 className="md:text-3xl lg:text-4xl mb-0 md:mb-5 text-center w-[50%]">
+          <h2 className="md:text-3xl lg:text-4xl mb-0 md:mb-5 font-semibold text-center w-[50%]">
             {title}
           </h2>
           {viewAllLink && (

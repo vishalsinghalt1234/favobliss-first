@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import Image from '@/components/image';
+import Image from "@/components/image";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Navigation, Pagination } from "swiper/modules";
@@ -17,7 +17,7 @@ const HeroSliderMobile: React.FC = () => {
   const slides = [
     {
       id: 1,
-      src: "/assets/hero/website-banner-2.jpeg",
+      src: "/assets/hero/website-banner-2.png",
       alt: "Cool comfort air conditioners",
       width: 1000,
       height: 340,
@@ -30,13 +30,13 @@ const HeroSliderMobile: React.FC = () => {
       width: 1000,
       height: 340,
     },
-    {
-      id: 3,
-      src: "/assets/hero/banner1.webp",
-      alt: "Best Television India",
-      width: 1000,
-      height: 340,
-    },
+    // {
+    //   id: 3,
+    //   src: "/assets/hero/banner1.webp",
+    //   alt: "Best Television India",
+    //   width: 1000,
+    //   height: 340,
+    // },
   ];
 
   useEffect(() => {
@@ -55,7 +55,7 @@ const HeroSliderMobile: React.FC = () => {
   // Show first image as placeholder while loading
   if (!isLoaded) {
     return (
-      <div className="relative w-full aspect-[3/1] max-h-[700px] bg-transparent md:hidden block px-[8px] md:px-6 border-0">
+      <div className="relative w-full aspect-[3/1] max-h-[700px] bg-transparent md:hidden block px-[8px] md:px-6 border-0 h-[220px] sm:h-[260px]">
         <Image
           src="/assets/hero/banner-boat.jpg"
           alt="Best Television India"
@@ -72,21 +72,21 @@ const HeroSliderMobile: React.FC = () => {
 
   return (
     <section className="relative w-full block md:hidden">
-      <div className="relative w-full aspect-[3/1] max-h-[700px] overflow-hidden px-[8px] md:px-6 border-0">
+      <div className="relative w-full aspect-[3/1] max-h-[700px] overflow-hidden px-[8px] md:px-6 border-0 h-[220px] sm:h-[260px]">
         <Swiper
           modules={[Autoplay, Navigation, Pagination]}
           spaceBetween={0}
           slidesPerView={1}
-          loop={true}                    // important for smooth infinite
+          loop={true} // important for smooth infinite
           autoplay={{
             delay: 4000,
             disableOnInteraction: false,
             pauseOnMouseEnter: true,
           }}
           pagination={{
-  el: ".hero-mobile-pagination",
-  clickable: true,
-}}
+            el: ".hero-mobile-pagination",
+            clickable: true,
+          }}
           // navigation={{
           //   nextEl: ".mobile-swiper-next",
           //   prevEl: ".mobile-swiper-prev",
@@ -94,7 +94,7 @@ const HeroSliderMobile: React.FC = () => {
           className="h-full w-full rounded-2xl"
         >
           {slides.map((slide) => (
-            <SwiperSlide  key={slide.id} className="relative w-full h-full">
+            <SwiperSlide key={slide.id} className="relative w-full h-full">
               <Image
                 src={slide.src}
                 alt={slide.alt}
@@ -119,10 +119,8 @@ const HeroSliderMobile: React.FC = () => {
             <ChevronRight size={20} className="text-gray-800 sm:w-6 sm:h-6" />
           </div> */}
         </Swiper>
-
       </div>
-        <div className="hero-mobile-pagination my-3 flex items-center justify-center gap-2" />
-      
+      <div className="hero-mobile-pagination my-3 flex items-center justify-center gap-2" />
     </section>
   );
 };
