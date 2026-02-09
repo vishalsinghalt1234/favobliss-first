@@ -14,7 +14,7 @@ export async function PATCH(
 ) {
   try {
     const session = await auth();
-    const { name, description } = await request.json();
+    const { name, description, link } = await request.json();
 
     if (!session || !session.user || !session.user.id) {
       return new NextResponse("Unauthorized Access", { status: 401 });
@@ -54,6 +54,7 @@ export async function PATCH(
       data: {
         name,
         description,
+        link
       },
     });
 

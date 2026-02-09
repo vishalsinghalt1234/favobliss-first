@@ -16,44 +16,104 @@ interface SearchProductListClientProps {
   priceRanges: any[];
   ratingRanges: any[];
   discountRanges: any[];
+  allProducts: any[];
 }
 
 export default function SearchProductListClient({
   searchQuery,
   locationGroups,
+  allProducts,
 }: SearchProductListClientProps) {
   const searchParams = useSearchParams();
-  const [products, setProducts] = useState<any[]>([]);
-  const [totalProducts, setTotalProducts] = useState(0);
-  const [loading, setLoading] = useState(true);
+  const [filteredProducts, setFilteredProducts] = useState<any[]>(allProducts);
+  const [totalProducts, setTotalProducts] = useState<number>(allProducts.length);
 
-  const currentPage = parseInt(searchParams.get("page") || "1");
+  const currentPage = parseInt(searchParams.get("page") || "1", 10);
+  const pageSize = 12;
   const totalPages = Math.ceil(totalProducts / 12);
 
   useEffect(() => {
-    setLoading(true);
-    const params = new URLSearchParams(searchParams.toString());
-    params.set("query", searchQuery);
+    let products = [...allProducts];
+    const colorId = searchParams.get("colorId");
+    if (colorId) {
+      products = products.filter((p: any) =>
+        p.variants.some((v: any) => v.colorId === colorId)
+      );
+    }
 
-    fetch(`/api/search?${params.toString()}`)
-      .then((res) => res.json())
-      .then((data) => {
-        setProducts(data.products || []);
-        setTotalProducts(data.pagination?.totalProducts || 0);
-        setLoading(false);
-      })
-      .catch(() => setLoading(false));
-  }, [searchParams, searchQuery]);
+    const sizeId = searchParams.get("sizeId");
+    if (sizeId) {
+      products = products.filter((p: any) =>
+        p.variants.some((v: any) => v.sizeId === sizeId)
+      );
+    }
 
-  if (loading) return <div className="text-center py-10">Loading search results...</div>;
+    const brandId = searchParams.get("brandId");
+    if (brandId) {
+      products = products.filter((p: any) => p.brandId === brandId);
+    }
+
+    const priceRange = searchParams.get("price");
+    if (priceRange) {
+      let [minStr, maxStr] = priceRange.split("-");
+      let minPrice = parseFloat(minStr) || 0;
+      let maxPrice = maxStr ? parseFloat(maxStr) : Infinity;
+
+      products = products.filter((p: any) =>
+        p.variants.some((v: any) =>
+          v.variantPrices.some((vp: any) => {
+            const price = vp.price;
+            return price >= minPrice && price <= maxPrice;
+          })
+        )
+      );
+    }
+
+    const ratingStr = searchParams.get("rating");
+    if (ratingStr) {
+      const minRating = parseInt(ratingStr, 10);
+      products = products.filter((p: any) => {
+        if (!p.reviews || p.reviews.length === 0) return false;
+        const avgRating =
+          p.reviews.reduce((sum: number, r: any) => sum + r.rating, 0) /
+          p.reviews.length;
+        return avgRating >= minRating;
+      });
+    }
+
+    const discountStr = searchParams.get("discount");
+    if (discountStr) {
+      const minDiscount = parseInt(discountStr, 10);
+      products = products.filter((p: any) => {
+        let maxDisc = 0;
+        p.variants.forEach((v: any) => {
+          v.variantPrices.forEach((vp: any) => {
+            if (vp.mrp > 0) {
+              const disc = ((vp.mrp - vp.price) / vp.mrp) * 100;
+              if (disc > maxDisc) maxDisc = disc;
+            }
+          });
+        });
+        return maxDisc >= minDiscount;
+      });
+    }
+
+    setFilteredProducts(products);
+    setTotalProducts(products.length);
+  }, [searchParams, allProducts]);
+
+  const paginatedProducts = filteredProducts.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize
+  );
 
   return (
     <>
-      {products.length === 0 ? (
+      {paginatedProducts.length === 0 ? (
         <NoResults />
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-8 lg:gap-10">
-          {products.map((product: any) => (
+          {paginatedProducts.map((product: any) => (
             <ProductCard
               key={product.id}
               data={product}

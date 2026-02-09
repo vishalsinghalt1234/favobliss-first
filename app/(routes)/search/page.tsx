@@ -92,14 +92,14 @@ const Search = async ({ searchParams }: SearchPageProps) => {
     withRetry(() => getLocationGroups()),
   ]);
 
-  // Keep your classification logic (important for search)
+  const searchResults = await withRetry(() =>
+    getSearchItem({ query, limit: "1000", page: 1 } as any),
+  );
+  const allProducts = searchResults.products || [];
+
   let classification = "TOPWEAR";
-  if (query) {
-    const baseResults = await withRetry(() =>
-      getSearchItem({ query, limit: "1", page: 1 } as any),
-    );
-    classification =
-      baseResults.products[0]?.category?.classification || "TOPWEAR";
+  if (allProducts.length > 0) {
+    classification = allProducts[0]?.category?.classification || "TOPWEAR";
   }
 
   const sizeMap: { [key: string]: string[] } = {
@@ -197,6 +197,7 @@ const Search = async ({ searchParams }: SearchPageProps) => {
                 priceRanges={priceRange}
                 ratingRanges={ratingRanges}
                 discountRanges={discountRanges}
+                allProducts={allProducts}
               />
             </div>
           </div>

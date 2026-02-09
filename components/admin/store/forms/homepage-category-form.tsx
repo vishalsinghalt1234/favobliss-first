@@ -56,11 +56,13 @@ export const HomepageCategoryForm = ({
     defaultValues: data
       ? {
           name: data.name,
+          link: data.link || "",
           description: data.description || "",
         }
       : {
           name: "",
           description: "",
+          link: ""
         },
   });
 
@@ -286,6 +288,23 @@ export const HomepageCategoryForm = ({
                       {...field}
                       disabled={loading}
                       placeholder="Description (optional)"
+                    />
+                  </FormControl>
+                  <FormMessage className="w-full px-2 py-2 bg-destructive/20 text-destructive/70 rounded-md" />
+                </FormItem>
+              )}
+            />
+             <FormField
+              control={form.control}
+              name="link"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Link</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      disabled={loading}
+                      placeholder="add link with /"
                     />
                   </FormControl>
                   <FormMessage className="w-full px-2 py-2 bg-destructive/20 text-destructive/70 rounded-md" />

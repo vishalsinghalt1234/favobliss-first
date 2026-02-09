@@ -38,7 +38,7 @@ const LandingPage = async ({ params }: { params: { storeId: string } }) => {
     getLocationGroups(),
     getBrands(),
     getHomepageCategory(),
-    HotProductsSection()
+    HotProductsSection(),
   ]);
 
   // Extract results with fallback values for rejected promises
@@ -49,7 +49,7 @@ const LandingPage = async ({ params }: { params: { storeId: string } }) => {
     locationGroupsResult,
     brandsResult,
     homepageCategoriesResult,
-    hotProductsResult
+    hotProductsResult,
   ] = results;
 
   const allProducts =
@@ -70,9 +70,7 @@ const LandingPage = async ({ params }: { params: { storeId: string } }) => {
       ? homepageCategoriesResult.value
       : [];
   const hotProductsSection =
-    hotProductsResult.status === "fulfilled"
-      ? hotProductsResult.value
-      : null;
+    hotProductsResult.status === "fulfilled" ? hotProductsResult.value : null;
 
   return (
     <>
@@ -84,7 +82,7 @@ const LandingPage = async ({ params }: { params: { storeId: string } }) => {
           fetchPriority="high"
         />
       </Head>
-      <div className="bg-[#f8f8f8] min-h-screen">
+      <div className="bg-[#f8f8f8] min-h-screen relative">
         <HeroSlider />
         <HeroSliderMobile />
         <CategorySlider categories={categories} />
@@ -95,7 +93,9 @@ const LandingPage = async ({ params }: { params: { storeId: string } }) => {
               <BannerProductSection
                 locationGroups={locationGroups}
                 products={hotProductsSection?.products || []}
-                bannerImage={hotProductsSection?.bannerImage || "/assets/gaming.jpg"}
+                bannerImage={
+                  hotProductsSection?.bannerImage || "/assets/gaming.jpg"
+                }
               />
               <RecentlyViewed locationGroups={locationGroups} />
               <ProductList

@@ -40,6 +40,7 @@ const HomepageCategoriesPage = async ({
       id: item.id,
       name: item.name,
       description: item.description || "No description",
+      link: item?.link || "/",
       productCount: item.products.length,
       productNames: item.products.map(
         (cp) => cp.product.variants[0]?.name || "Unnamed Product"

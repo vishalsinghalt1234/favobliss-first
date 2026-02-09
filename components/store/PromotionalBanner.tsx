@@ -6,6 +6,7 @@ import {
   LocationGroup,
 } from "@/types";
 import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { ProductSkeleton } from "./product-skeleton";
 import CategoryButtons from "./CategoryButtons";
 import PromtionalBannerProducts from "./PromotionalBannerProducts";
@@ -19,8 +20,9 @@ interface Props {
 const PromotionalBanner = (props: Props) => {
   const { locationGroups, categories } = props;
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
-  const [category, setCategory] = useState<string>("first");
+  const [category, setCategory] = useState<string>(categories[0]?.id ?? "");
   const [product, setProduct] = useState<HomePageCategoryProduct[] | undefined>(
     [],
   );
@@ -31,6 +33,7 @@ const PromotionalBanner = (props: Props) => {
 
   useEffect(() => {
     const getData = async () => {
+      if (!category) return;
       setLoading(true);
       const productsData = await getHomepageCategoryById(category);
       //@ts-ignore
@@ -53,7 +56,6 @@ const PromotionalBanner = (props: Props) => {
           />
         </div>
 
-        {/* CONTENT SECTION (tabs + products stay as-is) */}
         <div className="relative">
           <div className="w-full lg:px-0">
             <div className="mb-4 sm:mb-6 w-full">
@@ -86,6 +88,24 @@ const PromotionalBanner = (props: Props) => {
                 products={product}
                 locationGroups={locationGroups}
               />
+            )}
+
+            {!loading && product && product?.length > 0 && (
+              <div className="mt-4 text-center">
+                <button
+                  className="bg-white text-black px-8 py-2 hover:bg-white transition-colors border rounded-lg"
+                  onClick={() => {
+                    const currentCat = categories.find(
+                      (c) => c.id === category,
+                    );
+                    if (currentCat?.link) {
+                      router.push(`category/${currentCat.link}?page=1`);
+                    }
+                  }}
+                >
+                  View More
+                </button>
+              </div>
             )}
           </div>
         </div>

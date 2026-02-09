@@ -389,6 +389,7 @@ export interface HomepageCategory {
   id: string;
   name: string;
   description: string;
+  link: string;
   createdAt: string;
   updatedAt: string;
   products: HomePageCategoryProduct[];

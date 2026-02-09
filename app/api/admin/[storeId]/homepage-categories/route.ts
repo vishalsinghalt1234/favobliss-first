@@ -7,7 +7,7 @@ export async function POST(
   { params }: { params: { storeId: string } }
 ) {
   try {
-    const { name, description } = await request.json();
+    const { name, description, link } = await request.json();
     const session = await auth();
 
     if (!session || !session.user || !session.user.id) {
@@ -38,6 +38,7 @@ export async function POST(
       data: {
         name,
         description,
+        link,
         storeId: params.storeId,
       },
     });

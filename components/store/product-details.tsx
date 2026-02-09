@@ -29,6 +29,7 @@ import { GoShareAndroid } from "react-icons/go";
 import { useShareModal } from "@/hooks/use-share-modal";
 import Link from "next/link";
 import CouponsOffer from "./Coupons-offer";
+import Image from "next/image";
 
 interface ProductDetailsProps {
   productData: ProductApiResponse;
@@ -116,10 +117,10 @@ export const ProductDetails = (props: ProductDetailsProps) => {
 
   const { variant, product, allVariants } = productData;
   const [selectedSizeId, setSelectedSizeId] = useState<string | undefined>(
-    defaultVariant.sizeId
+    defaultVariant.sizeId,
   );
   const [selectedColorId, setSelectedColorId] = useState<string | undefined>(
-    defaultVariant.colorId
+    defaultVariant.colorId,
   );
   const [pincode, setPincode] = useState<string>("");
   const [showStickyBar, setShowStickyBar] = useState(true);
@@ -141,8 +142,8 @@ export const ProductDetails = (props: ProductDetailsProps) => {
     new Map(
       allVariants
         .filter((v) => v.sizeId)
-        .map((v) => [v.sizeId, { id: v.sizeId, name: v.size }])
-    ).values()
+        .map((v) => [v.sizeId, { id: v.sizeId, name: v.size }]),
+    ).values(),
   );
 
   const uniqueColors = Array.from(
@@ -152,8 +153,8 @@ export const ProductDetails = (props: ProductDetailsProps) => {
         .map((v) => [
           v.colorId,
           { id: v.colorId, name: v.color, value: v.color },
-        ])
-    ).values()
+        ]),
+    ).values(),
   );
 
   const availableSizes = uniqueSizes;
@@ -161,7 +162,7 @@ export const ProductDetails = (props: ProductDetailsProps) => {
 
   useEffect(() => {
     const matchingVariant = allVariants.find(
-      (v) => v.sizeId === selectedSizeId && v.colorId === selectedColorId
+      (v) => v.sizeId === selectedSizeId && v.colorId === selectedColorId,
     );
 
     if (matchingVariant && matchingVariant.id !== selectedVariant.id) {
@@ -171,7 +172,7 @@ export const ProductDetails = (props: ProductDetailsProps) => {
 
   const codAvailable = (pincode: string, locationGroups: LocationGroup[]) => {
     const foundGroup = locationGroups.find((group) =>
-      group.locations.some((loc) => loc.pincode === pincode)
+      group.locations.some((loc) => loc.pincode === pincode),
     );
     if (foundGroup) {
       setCurrentLocationGroupData(foundGroup);
@@ -183,7 +184,7 @@ export const ProductDetails = (props: ProductDetailsProps) => {
   const getFallbackGroup = () => {
     return (
       locationGroups.find((group) =>
-        group.locations.some((loc) => loc.pincode === "110040")
+        group.locations.some((loc) => loc.pincode === "110040"),
       ) ?? null
     );
   };
@@ -204,12 +205,12 @@ export const ProductDetails = (props: ProductDetailsProps) => {
           usedPincode = storedPincode;
           activeLocationGroup =
             locationGroups.find((group) =>
-              group.locations.some((loc) => loc.pincode === storedPincode)
+              group.locations.some((loc) => loc.pincode === storedPincode),
             ) ?? null;
           if (activeLocationGroup) {
             const variantPrice = selectedVariant.variantPrices?.find(
               //@ts-ignore
-              (vp) => vp.locationGroupId === activeLocationGroup.id
+              (vp) => vp.locationGroupId === activeLocationGroup.id,
             );
 
             // Check if price is 0 (product not available)
@@ -222,7 +223,7 @@ export const ProductDetails = (props: ProductDetailsProps) => {
               let fallbackVariantPrice = null;
               if (fallbackGroup) {
                 fallbackVariantPrice = selectedVariant.variantPrices?.find(
-                  (vp) => vp.locationGroupId === fallbackGroup.id
+                  (vp) => vp.locationGroupId === fallbackGroup.id,
                 );
               }
 
@@ -233,7 +234,7 @@ export const ProductDetails = (props: ProductDetailsProps) => {
               });
 
               const matchedLocation = activeLocationGroup.locations.find(
-                (loc) => loc.pincode === storedPincode
+                (loc) => loc.pincode === storedPincode,
               );
               setIsCodAvailableForPincode(false);
               setDeliveryInfo({
@@ -245,7 +246,7 @@ export const ProductDetails = (props: ProductDetailsProps) => {
               });
             } else {
               const matchedLocation = activeLocationGroup.locations.find(
-                (loc) => loc.pincode === storedPincode
+                (loc) => loc.pincode === storedPincode,
               );
               setIsCodAvailableForPincode(activeLocationGroup.isCodAvailable);
               setDeliveryInfo({
@@ -271,7 +272,7 @@ export const ProductDetails = (props: ProductDetailsProps) => {
       !isAddressLoading
     ) {
       const defaultAddress = addresses.find(
-        (address: Address) => address.isDefault
+        (address: Address) => address.isDefault,
       );
 
       if (defaultAddress) {
@@ -279,13 +280,13 @@ export const ProductDetails = (props: ProductDetailsProps) => {
         usedPincode = sessionPincode;
         activeLocationGroup =
           locationGroups.find((group) =>
-            group.locations.some((loc) => loc.pincode === sessionPincode)
+            group.locations.some((loc) => loc.pincode === sessionPincode),
           ) ?? null;
 
         if (activeLocationGroup) {
           const variantPrice = selectedVariant.variantPrices?.find(
             //@ts-ignore
-            (vp) => vp.locationGroupId === activeLocationGroup.id
+            (vp) => vp.locationGroupId === activeLocationGroup.id,
           );
 
           // Check if price is 0 (product not available)
@@ -298,7 +299,7 @@ export const ProductDetails = (props: ProductDetailsProps) => {
             let fallbackVariantPrice = null;
             if (fallbackGroup) {
               fallbackVariantPrice = selectedVariant.variantPrices?.find(
-                (vp) => vp.locationGroupId === fallbackGroup.id
+                (vp) => vp.locationGroupId === fallbackGroup.id,
               );
             }
 
@@ -309,7 +310,7 @@ export const ProductDetails = (props: ProductDetailsProps) => {
             });
 
             const matchedLocation = activeLocationGroup.locations.find(
-              (loc) => loc.pincode === sessionPincode
+              (loc) => loc.pincode === sessionPincode,
             );
             const sessionLocation = {
               city:
@@ -322,7 +323,7 @@ export const ProductDetails = (props: ProductDetailsProps) => {
 
             localStorage.setItem(
               "locationData",
-              JSON.stringify(sessionLocation)
+              JSON.stringify(sessionLocation),
             );
             window.dispatchEvent(new Event("locationDataUpdated"));
             setIsCodAvailableForPincode(false);
@@ -333,7 +334,7 @@ export const ProductDetails = (props: ProductDetailsProps) => {
             });
           } else {
             const matchedLocation = activeLocationGroup.locations.find(
-              (loc) => loc.pincode === sessionPincode
+              (loc) => loc.pincode === sessionPincode,
             );
             const sessionLocation = {
               city:
@@ -346,7 +347,7 @@ export const ProductDetails = (props: ProductDetailsProps) => {
 
             localStorage.setItem(
               "locationData",
-              JSON.stringify(sessionLocation)
+              JSON.stringify(sessionLocation),
             );
             window.dispatchEvent(new Event("locationDataUpdated"));
             setIsCodAvailableForPincode(activeLocationGroup.isCodAvailable);
@@ -363,13 +364,13 @@ export const ProductDetails = (props: ProductDetailsProps) => {
         usedPincode = sessionPincode;
         activeLocationGroup =
           locationGroups.find((group) =>
-            group.locations.some((loc) => loc.pincode === sessionPincode)
+            group.locations.some((loc) => loc.pincode === sessionPincode),
           ) ?? null;
 
         if (activeLocationGroup) {
           const variantPrice = selectedVariant.variantPrices?.find(
             //@ts-ignore
-            (vp) => vp.locationGroupId === activeLocationGroup.id
+            (vp) => vp.locationGroupId === activeLocationGroup.id,
           );
 
           // Check if price is 0 (product not available)
@@ -382,7 +383,7 @@ export const ProductDetails = (props: ProductDetailsProps) => {
             let fallbackVariantPrice = null;
             if (fallbackGroup) {
               fallbackVariantPrice = selectedVariant.variantPrices?.find(
-                (vp) => vp.locationGroupId === fallbackGroup.id
+                (vp) => vp.locationGroupId === fallbackGroup.id,
               );
             }
 
@@ -393,7 +394,7 @@ export const ProductDetails = (props: ProductDetailsProps) => {
             });
 
             const matchedLocation = activeLocationGroup.locations.find(
-              (loc) => loc.pincode === sessionPincode
+              (loc) => loc.pincode === sessionPincode,
             );
             const sessionLocation = {
               city: firstAddress.district || matchedLocation?.city || "Unknown",
@@ -404,7 +405,7 @@ export const ProductDetails = (props: ProductDetailsProps) => {
 
             localStorage.setItem(
               "locationData",
-              JSON.stringify(sessionLocation)
+              JSON.stringify(sessionLocation),
             );
             window.dispatchEvent(new Event("locationDataUpdated"));
             setIsCodAvailableForPincode(false);
@@ -415,7 +416,7 @@ export const ProductDetails = (props: ProductDetailsProps) => {
             });
           } else {
             const matchedLocation = activeLocationGroup.locations.find(
-              (loc) => loc.pincode === sessionPincode
+              (loc) => loc.pincode === sessionPincode,
             );
             const sessionLocation = {
               city: firstAddress.district || matchedLocation?.city || "Unknown",
@@ -426,7 +427,7 @@ export const ProductDetails = (props: ProductDetailsProps) => {
 
             localStorage.setItem(
               "locationData",
-              JSON.stringify(sessionLocation)
+              JSON.stringify(sessionLocation),
             );
             window.dispatchEvent(new Event("locationDataUpdated"));
             setIsCodAvailableForPincode(activeLocationGroup.isCodAvailable);
@@ -446,13 +447,13 @@ export const ProductDetails = (props: ProductDetailsProps) => {
       usedPincode = fallbackPincode;
       activeLocationGroup =
         locationGroups.find((group) =>
-          group.locations.some((loc) => loc.pincode === fallbackPincode)
+          group.locations.some((loc) => loc.pincode === fallbackPincode),
         ) ?? null;
 
       if (activeLocationGroup) {
         const variantPrice = selectedVariant.variantPrices?.find(
           //@ts-ignore
-          (vp) => vp.locationGroupId === activeLocationGroup.id
+          (vp) => vp.locationGroupId === activeLocationGroup.id,
         );
 
         // Check if price is 0 (product not available)
@@ -468,7 +469,7 @@ export const ProductDetails = (props: ProductDetailsProps) => {
           });
 
           const matchedLocation = activeLocationGroup.locations.find(
-            (loc) => loc.pincode === fallbackPincode
+            (loc) => loc.pincode === fallbackPincode,
           );
           const fallbackLocation = {
             city: matchedLocation?.city || "Delhi",
@@ -478,7 +479,7 @@ export const ProductDetails = (props: ProductDetailsProps) => {
           };
           localStorage.setItem(
             "locationData",
-            JSON.stringify(fallbackLocation)
+            JSON.stringify(fallbackLocation),
           );
           window.dispatchEvent(new Event("locationDataUpdated"));
           setIsCodAvailableForPincode(false);
@@ -489,7 +490,7 @@ export const ProductDetails = (props: ProductDetailsProps) => {
           });
         } else {
           const matchedLocation = activeLocationGroup.locations.find(
-            (loc) => loc.pincode === fallbackPincode
+            (loc) => loc.pincode === fallbackPincode,
           );
           const fallbackLocation = {
             city: matchedLocation?.city || "Delhi",
@@ -499,7 +500,7 @@ export const ProductDetails = (props: ProductDetailsProps) => {
           };
           localStorage.setItem(
             "locationData",
-            JSON.stringify(fallbackLocation)
+            JSON.stringify(fallbackLocation),
           );
           window.dispatchEvent(new Event("locationDataUpdated"));
           setIsCodAvailableForPincode(activeLocationGroup.isCodAvailable);
@@ -515,7 +516,7 @@ export const ProductDetails = (props: ProductDetailsProps) => {
     if (activeLocationGroup) {
       const group = activeLocationGroup;
       const variantPrice = selectedVariant.variantPrices?.find(
-        (vp) => vp.locationGroupId === group.id
+        (vp) => vp.locationGroupId === group.id,
       );
 
       // Only set default location group data if product is available
@@ -559,15 +560,15 @@ export const ProductDetails = (props: ProductDetailsProps) => {
   const handlePincodeCheck = () => {
     if (pincode.trim()) {
       const foundGroup = locationGroups.find((group) =>
-        group.locations.some((loc) => loc.pincode === pincode.trim())
+        group.locations.some((loc) => loc.pincode === pincode.trim()),
       );
       const foundLocation = foundGroup?.locations.find(
-        (loc) => loc.pincode === pincode.trim()
+        (loc) => loc.pincode === pincode.trim(),
       );
 
       if (foundGroup && foundLocation) {
         const variantPrice = selectedVariant.variantPrices?.find(
-          (vp) => vp.locationGroupId === foundGroup.id
+          (vp) => vp.locationGroupId === foundGroup.id,
         );
 
         if (variantPrice) {
@@ -598,7 +599,7 @@ export const ProductDetails = (props: ProductDetailsProps) => {
           let fallbackVariantPrice = null;
           if (fallbackGroup) {
             fallbackVariantPrice = selectedVariant.variantPrices?.find(
-              (vp) => vp.locationGroupId === fallbackGroup.id
+              (vp) => vp.locationGroupId === fallbackGroup.id,
             );
           }
 
@@ -626,7 +627,7 @@ export const ProductDetails = (props: ProductDetailsProps) => {
           if (fallbackLocation) {
             localStorage.setItem(
               "locationData",
-              JSON.stringify(fallbackLocation)
+              JSON.stringify(fallbackLocation),
             );
             window.dispatchEvent(new Event("locationDataUpdated"));
           }
@@ -638,7 +639,7 @@ export const ProductDetails = (props: ProductDetailsProps) => {
         let fallbackVariantPrice = null;
         if (fallbackGroup) {
           fallbackVariantPrice = selectedVariant.variantPrices?.find(
-            (vp) => vp.locationGroupId === fallbackGroup.id
+            (vp) => vp.locationGroupId === fallbackGroup.id,
           );
         }
 
@@ -666,7 +667,7 @@ export const ProductDetails = (props: ProductDetailsProps) => {
         if (fallbackLocation) {
           localStorage.setItem(
             "locationData",
-            JSON.stringify(fallbackLocation)
+            JSON.stringify(fallbackLocation),
           );
           window.dispatchEvent(new Event("locationDataUpdated"));
         }
@@ -739,7 +740,7 @@ export const ProductDetails = (props: ProductDetailsProps) => {
 
   useEffect(() => {
     const variant = allVariants.find(
-      (v) => v.sizeId === selectedSizeId && v.colorId === selectedColorId
+      (v) => v.sizeId === selectedSizeId && v.colorId === selectedColorId,
     );
     if (variant) {
       const fullVariant =
@@ -786,13 +787,13 @@ export const ProductDetails = (props: ProductDetailsProps) => {
         setSelectedColorId(undefined);
       }
     },
-    [allVariants, selectedColorId]
+    [allVariants, selectedColorId],
   );
 
   useEffect(() => {
     if (isPincodeChecked && selectedLocationGroupId) {
       const variantPrice = selectedVariant.variantPrices?.find(
-        (vp) => vp.locationGroupId === selectedLocationGroupId
+        (vp) => vp.locationGroupId === selectedLocationGroupId,
       );
       setLocationPrice({
         price: variantPrice?.price || 0,
@@ -834,13 +835,13 @@ export const ProductDetails = (props: ProductDetailsProps) => {
         setSelectedSizeId(undefined);
       }
     },
-    [allVariants, selectedSizeId]
+    [allVariants, selectedSizeId],
   );
 
   const discountPercentage =
     locationPrice.mrp > 0
       ? Math.round(
-          ((locationPrice.mrp - locationPrice.price) / locationPrice.mrp) * 100
+          ((locationPrice.mrp - locationPrice.price) / locationPrice.mrp) * 100,
         )
       : 0;
 
@@ -992,7 +993,7 @@ export const ProductDetails = (props: ProductDetailsProps) => {
                     {availableSizes.map(({ id, name }) => {
                       const isSelected = selectedSizeId === id;
                       const isAvailable = allVariants.some(
-                        (v) => v.sizeId === id
+                        (v) => v.sizeId === id,
                       );
 
                       return (
@@ -1008,7 +1009,7 @@ export const ProductDetails = (props: ProductDetailsProps) => {
                               ? "border-black bg-black text-white"
                               : "border-gray-300 bg-white text-gray-900 hover:border-gray-400",
                             !isAvailable &&
-                              "opacity-50 cursor-not-allowed line-through"
+                              "opacity-50 cursor-not-allowed line-through",
                           )}
                         >
                           {name || "Unknown"}
@@ -1030,7 +1031,7 @@ export const ProductDetails = (props: ProductDetailsProps) => {
                     {availableColors.map(({ id, name, value }) => {
                       const isSelected = selectedColorId === id;
                       const isAvailable = allVariants.some(
-                        (v) => v.colorId === id
+                        (v) => v.colorId === id,
                       );
 
                       return (
@@ -1038,7 +1039,7 @@ export const ProductDetails = (props: ProductDetailsProps) => {
                           key={id}
                           className={cn(
                             "relative cursor-pointer transition-all duration-200",
-                            !isAvailable && "opacity-50 cursor-not-allowed"
+                            !isAvailable && "opacity-50 cursor-not-allowed",
                           )}
                           onClick={() =>
                             isAvailable && handleColorChange(id as string)
@@ -1050,9 +1051,9 @@ export const ProductDetails = (props: ProductDetailsProps) => {
                               isSelected
                                 ? "border-black ring-2 ring-black ring-offset-2"
                                 : isLightColor(value)
-                                ? "border-2 border-gray-500" // Stronger border for light colors
-                                : "border-1 border-gray-300",
-                              !isAvailable && "grayscale"
+                                  ? "border-2 border-gray-500" // Stronger border for light colors
+                                  : "border-1 border-gray-300",
+                              !isAvailable && "grayscale",
                             )}
                             style={{
                               backgroundColor: value || "#f3f4f6",
@@ -1151,7 +1152,7 @@ export const ProductDetails = (props: ProductDetailsProps) => {
                             "text-sm font-medium",
                             isProductAvailable
                               ? "text-gray-900"
-                              : "text-red-700"
+                              : "text-red-700",
                           )}
                         >
                           {isProductAvailable
@@ -1168,7 +1169,7 @@ export const ProductDetails = (props: ProductDetailsProps) => {
                             <span className="font-medium">
                               Express Delivery{" "}
                               {formatDeliveryDate(
-                                deliveryInfo.estimatedDelivery
+                                deliveryInfo.estimatedDelivery,
                               )}
                             </span>
                           </div>
@@ -1206,6 +1207,18 @@ export const ProductDetails = (props: ProductDetailsProps) => {
               </div>
             )}
           </div>
+
+          {productData.product.warranty &&
+            productData.product.warranty.trim() !== "" && (
+              <div className="flex items-center mt-4 border rounded-lg p-2 py-1 bg-[#f6f4f4]">
+                <Image src={product.brand.cardImage} alt="logo" width={50} height={50} />
+                <div className="w-full">
+                <p className="text-base text-center">
+                  {productData.product.warranty}
+                </p>
+                </div>
+              </div>
+            )}
           {productData.product.enabledFeatures && (
             <ProductFeatures data={productData} />
           )}

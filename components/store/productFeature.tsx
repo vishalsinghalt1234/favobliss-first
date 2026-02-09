@@ -39,14 +39,14 @@ export const ProductFeatures = ({ data }: ProductFeaturesProps) => {
           }}
         />
 
-        {data.product.warranty && data.product.warranty.trim() !== "" && (
+        {/* {data.product.warranty && data.product.warranty.trim() !== "" && (
           <li>
             <span className="font-semibold text-base text-orange-500">
               Warranty:{" "}
             </span>
             {data.product.warranty}
           </li>
-        )}
+        )} */}
       </ul>
     </div>
   );

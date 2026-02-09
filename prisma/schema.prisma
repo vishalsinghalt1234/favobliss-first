@@ -581,6 +581,7 @@ model HomepageCategory {
   store       Store                     @relation("StoreToHomepageCategory", fields: [storeId], references: [id], onDelete: Cascade)
   name        String
   description String?
+  link        String?
   products    HomepageCategoryProduct[] @relation("HomepageCategoryToProduct")
   createdAt   DateTime                  @default(now())
   updatedAt   DateTime                  @updatedAt
