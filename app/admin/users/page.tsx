@@ -1,3 +1,4 @@
+import { Metadata } from "next";
 import { format } from "date-fns";
 import { db } from "@/lib/db";
 import { UserColumns } from "@/components/admin/store/utils/columns";
@@ -8,6 +9,8 @@ export const metadata = {
 };
 
 const UsersPage = async () => {
+  const pageSize = 10;
+
   const rawUsers = await db.user.findMany({
     select: {
       id: true,
@@ -21,8 +24,12 @@ const UsersPage = async () => {
         select: { id: true },
       },
     },
+    take: pageSize,
+    skip: 0,
     orderBy: { createdAt: "desc" },
   });
+
+  const total = await db.user.count();
 
   const users: UserColumns[] = rawUsers.map((user) => ({
     id: user.id,
@@ -37,7 +44,7 @@ const UsersPage = async () => {
   return (
     <div className="flex-col">
       <div className="flex-1 space-y-4 p-8 pt-6">
-        <UserClient data={users} />
+        <UserClient data={users} initialRowCount={total} />
       </div>
     </div>
   );

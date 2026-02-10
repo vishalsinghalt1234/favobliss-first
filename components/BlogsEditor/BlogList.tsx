@@ -10,6 +10,7 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { useState, useTransition } from "react";
+import Image from "next/image";
 
 interface Blog {
   id: string;
@@ -121,11 +122,14 @@ export default function BlogList({
                 >
                   <div className="relative h-52 overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200">
                     {blog.banner ? (
-                      <img
-                        src={blog.banner}
-                        alt={blog.title}
-                        className="w-full h-full object-fill group-hover:scale-110 transition-transform duration-500"
-                      />
+                      <div className="relative w-full h-full overflow-hidden">
+                        <Image
+                          src={blog.banner}
+                          alt={blog.title}
+                          fill
+                          className="object-fill group-hover:scale-110 transition-transform duration-500"
+                        />
+                      </div>
                     ) : (
                       <div className="w-full h-full flex items-center justify-center">
                         <svg
@@ -161,7 +165,7 @@ export default function BlogList({
                               month: "short",
                               day: "numeric",
                               year: "numeric",
-                            }
+                            },
                           )}
                         </span>
                       </div>
@@ -216,7 +220,7 @@ export default function BlogList({
                     >
                       {page}
                     </button>
-                  )
+                  ),
                 )}
 
                 <button

@@ -3,6 +3,8 @@ import { db } from "@/lib/db";
 import { ProductSchema } from "@/schemas/admin/product-form-schema";
 import { NextResponse } from "next/server";
 import { revalidatePath, revalidateTag } from "next/cache";
+import { Prisma } from "@prisma/client";
+import { format } from "date-fns";
 
 const allowedOrigins = [
   process.env.NEXT_PUBLIC_FRONTEND_URL,
@@ -270,427 +272,103 @@ export async function POST(
   }
 }
 
+const getSubCategoryName = (subCategory: any, subCategories: any[]): string => {
+  if (!subCategory?.parentId) return subCategory?.name || "None";
+  const parent = subCategories.find((sub) => sub.id === subCategory.parentId);
+  return parent
+    ? `${getSubCategoryName(parent, subCategories)} > ${subCategory.name}`
+    : subCategory?.name || "None";
+};
+
 export async function GET(
   request: Request,
   { params }: { params: { storeId: string } }
 ) {
-  const origin = request.headers.get("origin");
-  const corsOrigin = allowedOrigins.includes(origin ?? "")
-    ? origin ?? ""
-    : allowedOrigins[0];
-
-  const headers = {
-    "Access-Control-Allow-Origin": corsOrigin || "",
-    "Access-Control-Allow-Methods": "GET, OPTIONS",
-    "Access-Control-Allow-Headers": "Content-Type",
-    "Access-Control-Max-Age": "86400",
-  };
-
-  if (request.method === "OPTIONS") {
-    return new NextResponse(null, { status: 204, headers });
-  }
-
   try {
     if (!params.storeId) {
-      return new NextResponse("Store ID is required", {
-        status: 400,
-        headers,
-      });
+      return new NextResponse("Store ID is required", { status: 400 });
     }
 
     const { searchParams } = new URL(request.url);
-    const slug = searchParams.get("slug");
-    const categoryId = searchParams.get("categoryId");
-    const subCategoryId = searchParams.get("subCategoryId");
-    const brandId = searchParams.get("brandId");
-    const colorId = searchParams.get("colorId");
-    const sizeId = searchParams.get("sizeId");
-    const type = searchParams.get("type");
-    const page = parseInt(searchParams.get("page") || "1");
-    const limit = parseInt(searchParams.get("limit") || "12");
-    const price = searchParams.get("price");
-    const locationGroupId = searchParams.get("locationGroupId");
-    const pincode = searchParams.get("pincode");
-    const isFeatured = searchParams.get("isFeatured");
-    const variantIds = searchParams.get("variantIds")?.split(",");
-    const includeRelated = searchParams.get("includeRelated") === "true";
-    const rating = searchParams.get("rating");
-    const discount = searchParams.get("discount");
+    const page   = parseInt(searchParams.get("page")  || "1", 10);
+    const limit  = parseInt(searchParams.get("limit") || "10", 10);
+    const search = searchParams.get("search") || "";
 
-    let resolvedLocationGroupId = locationGroupId;
-    if (pincode && !locationGroupId) {
-      const location = await db.location.findUnique({
-        where: { pincode, storeId: params.storeId },
-        select: { locationGroupId: true },
-      });
-      if (!location) {
-        return new NextResponse("Invalid pincode", { status: 404, headers });
-      }
-      resolvedLocationGroupId = location.locationGroupId;
-    }
+    const skip = (page - 1) * limit;
 
-    // Validate subCategoryId if provided
-    if (subCategoryId) {
-      const subCategory = await db.subCategory.findUnique({
-        where: { id: subCategoryId, storeId: params.storeId },
-      });
-      if (!subCategory) {
-        console.log("Invalid subCategoryId", subCategoryId);
-        return new NextResponse("Invalid subcategory ID", {
-          status: 404,
-          headers,
-        });
-      }
-      if (categoryId && subCategory.categoryId !== categoryId) {
-        console.log("Subcategory does not belong to specified category", {
-          subCategoryId,
-          categoryId,
-        });
-        return new NextResponse(
-          "Subcategory does not belong to specified category",
-          { status: 400, headers }
-        );
-      }
-    }
-
-    if (slug) {
-      const variantData = await db.variant.findUnique({
-        where: { slug },
-        include: {
-          size: true,
-          color: true,
-          images: true,
-          variantPrices: {
-            where: resolvedLocationGroupId
-              ? { locationGroupId: resolvedLocationGroupId }
-              : undefined,
-            include: {
-              locationGroup: {
-                include: {
-                  locations: true,
-                },
-              },
-            },
-          },
-          variantSpecifications: {
-            include: {
-              specificationField: {
-                include: {
-                  group: true,
-                },
-              },
-            },
-          },
-          product: {
-            include: {
-              brand: true,
-              category: true,
-              subCategory: {
-                include: {
-                  parent: true,
-                },
-              },
-              variants: {
-                orderBy: {
-                  createdAt: "asc",
-                },
-                include: {
-                  size: true,
-                  color: true,
-                },
-              },
-              reviews: {
-                select: {
-                  rating: true,
-                },
-              },
-              coupons: {
-                where: {
-                  coupon: {
-                    isActive: true,
-                    startDate: { lte: new Date() },
-                    expiryDate: { gte: new Date() },
-                  },
-                },
-                include: {
-                  coupon: {
-                    select: {
-                      id: true,
-                      code: true,
-                      value: true,
-                      description: true,
-                      usagePerUser: true,
-                      usedCount: true,
-                    },
-                  },
-                },
-                orderBy: {
-                  createdAt: "desc",
-                },
-              },
-            },
-          },
-        },
-      });
-
-      if (!variantData || !variantData.product) {
-        return new NextResponse("Product not found", { status: 404, headers });
-      }
-
-      const product = variantData.product;
-
-      if (product.storeId !== params.storeId || product.isArchieved) {
-        return new NextResponse("Product not found", { status: 404, headers });
-      }
-
-      const ratings = product.reviews.map((review) => review.rating);
-      const numberOfRatings = ratings.length;
-      const averageRating =
-        numberOfRatings > 0
-          ? ratings.reduce((sum, rating) => sum + rating, 0) / numberOfRatings
-          : 0;
-
-      const { reviews, variants, ...productWithoutVariantsAndReviews } =
-        product;
-
-      const response = {
-        variant: {
-          ...variantData,
-          product: undefined, // Remove nested product
-        },
-        product: {
-          ...productWithoutVariantsAndReviews,
-          averageRating: Number(averageRating.toFixed(2)),
-          numberOfRatings,
-        },
-        allVariants: variants.map((v) => ({
-          id: v.id,
-          title: v.name,
-          slug: v.slug,
-          color: v.color?.name || null,
-          size: v.size?.value || null,
-          sizeId: v.size?.id,
-          colorId: v.color?.id,
-        })),
-      };
-
-      return NextResponse.json(response, { headers });
-    }
-
-    const where: any = {
+    const where: Prisma.ProductWhereInput = {
       storeId: params.storeId,
-      isArchieved: false,
+      ...(search
+        ? {
+            OR: [
+              { variants: { some: { name: { contains: search, mode: Prisma.QueryMode.insensitive } } } },
+              { variants: { some: { slug: { contains: search } } } },
+            ],
+          }
+        : {}),
     };
 
-    if (categoryId) {
-      where.categoryId = categoryId;
-    }
-
-    if (subCategoryId) {
-      where.subCategoryId = subCategoryId;
-    }
-
-    if (brandId) {
-      where.brandId = brandId;
-    }
-
-    if (colorId || sizeId) {
-      where.variants = {
-        some: {
-          ...(colorId && { colorId }),
-          ...(sizeId && { sizeId }),
-        },
-      };
-    }
-
-    if (type) {
-      where.type = type;
-    }
-
-    if (isFeatured) {
-      if (isFeatured === "true") {
-        where.isFeatured = true;
-      } else if (isFeatured === "false") {
-        where.isFeatured = false;
-      }
-    }
-
-    if (variantIds && variantIds.length > 0) {
-      where.variants = {
-        some: {
-          id: { in: variantIds },
-        },
-      };
-    }
-
-    if (price) {
-      let minPrice: number | undefined;
-      let maxPrice: number | undefined;
-
-      if (price === "5000") {
-        minPrice = 5000;
-      } else {
-        const [min, max] = price.split("-").map((p) => parseInt(p));
-        if (max) {
-          minPrice = min;
-          maxPrice = max;
-        }
-      }
-
-      if (minPrice || maxPrice) {
-        where.variants = {
-          some: {
-            ...(where.variants?.some || {}),
-            variantPrices: {
-              some: {
-                ...(resolvedLocationGroupId
-                  ? { locationGroupId: resolvedLocationGroupId }
-                  : {}),
-                price: {
-                  ...(minPrice && { gte: minPrice }),
-                  ...(maxPrice && { lte: maxPrice }),
-                },
-              },
-            },
+    const [products, subCategories, total] = await Promise.all([
+      db.product.findMany({
+        where,
+        include: {
+          category: true,
+          subCategory: {
+            include: { parent: true },
           },
-        };
-      }
-    }
-
-    const hasPostFilter = !!rating || !!discount;
-    const take = hasPostFilter ? undefined : limit;
-    const skip = hasPostFilter ? 0 : (page - 1) * limit;
-
-    const products = await db.product.findMany({
-      where,
-      include: {
-        brand: true,
-        category: true,
-        subCategory: {
-          include: {
-            parent: true,
-          },
-        },
-        variants: {
-          orderBy: {
-            createdAt: "asc",
-          },
-          include: {
-            size: true,
-            color: true,
-            images: true,
-            variantPrices: {
-              where: resolvedLocationGroupId
-                ? { locationGroupId: resolvedLocationGroupId }
-                : undefined,
-              include: {
-                locationGroup: true,
-              },
-            },
-            variantSpecifications: {
-              include: {
-                specificationField: {
-                  include: {
-                    group: true,
-                  },
-                },
-              },
+          variants: {
+            orderBy: { createdAt: "asc" },
+            take: 1,
+            include: {
+              size: true,
+              color: true,
+              variantPrices: { take: 1 },
             },
           },
         },
-        reviews: {
-          select: {
-            rating: true,
-          },
-        },
-        coupons: {
-          where: {
-            coupon: {
-              isActive: true,
-              startDate: { lte: new Date() },
-              expiryDate: { gte: new Date() },
-            },
-          },
-          include: {
-            coupon: {
-              select: {
-                id: true,
-                code: true,
-                value: true,
-                description: true,
-                usagePerUser: true,
-                usedCount: true,
-              },
-            },
-          },
-          orderBy: {
-            createdAt: "desc",
-          },
-        },
-      },
-      orderBy: {
-        createdAt: "desc",
-      },
-      skip,
-      take,
-    });
+        skip,
+        take: limit,
+        orderBy: { createdAt: "desc" },
+      }),
+      db.subCategory.findMany({
+        where: { storeId: params.storeId },
+        include: { parent: true },
+      }),
+      db.product.count({ where }),
+    ]);
 
-    let productsWithRatings = products.map((product) => {
-      const ratings = product.reviews.map((review) => review.rating);
-      const numberOfRatings = ratings.length;
-      const averageRating =
-        numberOfRatings > 0
-          ? ratings.reduce((sum, rating) => sum + rating, 0) / numberOfRatings
-          : 0;
+    const formattedProducts = products.map((product) => {
+      const firstVariant = product.variants[0];
+      const price = firstVariant?.variantPrices[0]?.price.toString() || "N/A";
+      const stock = firstVariant?.stock || 0;
+      const size = firstVariant?.size?.value || "None";
+      const color = firstVariant?.color?.name || "None";
 
-      const { reviews, ...productWithoutReviews } = product;
       return {
-        ...productWithoutReviews,
-        averageRating: Number(averageRating.toFixed(2)),
-        numberOfRatings,
+        id: product.id,
+        name: firstVariant?.name || "Unnamed Variant",
+        slug: firstVariant?.slug || "",
+        isFeatured: product.isFeatured,
+        isNewArrival: product.isNewArrival,
+        isArchieved: product.isArchieved,
+        price,
+        stock,
+        size,
+        color,
+        category: product.category?.name || "None",
+        subCategory: getSubCategoryName(product.subCategory, subCategories),
+        createdAt: format(product.createdAt, "MMMM do, yyyy"),
       };
     });
 
-    let filtered = productsWithRatings;
-    if (rating) {
-      const minRating = parseFloat(rating);
-      filtered = filtered.filter((p) => p.averageRating >= minRating);
-    }
-    if (discount) {
-      const minDiscount = parseFloat(discount);
-      filtered = filtered.filter((p) =>
-        p.variants.some((v) =>
-          v.variantPrices.some((vp) => {
-            if (
-              resolvedLocationGroupId &&
-              vp.locationGroupId !== resolvedLocationGroupId
-            )
-              return false;
-            if (vp.price >= vp.mrp) return false;
-            const d = ((vp.mrp - vp.price) / vp.mrp) * 100;
-            return d >= minDiscount;
-          })
-        )
-      );
-    }
-
-    const totalCount = hasPostFilter
-      ? filtered.length
-      : await db.product.count({ where });
-
-    const finalProducts = hasPostFilter
-      ? filtered.slice((page - 1) * limit, (page - 1) * limit + limit)
-      : filtered;
-
-    return NextResponse.json(
-      {
-        products: finalProducts,
-        totalCount,
-      },
-      { headers }
-    );
+    return NextResponse.json({
+      rows: formattedProducts,
+      rowCount: total,
+      page,
+      limit,
+    });
   } catch (error) {
-    console.log("[PRODUCTS_GET]", error);
-    return new NextResponse("Internal server error", { status: 500, headers });
+    console.error("[ADMIN_PRODUCTS_GET]", error);
+    return new NextResponse("Internal server error", { status: 500 });
   }
 }

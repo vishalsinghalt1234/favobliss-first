@@ -1,6 +1,8 @@
 import { auth } from "@/auth";
 import { db } from "@/lib/db";
 import { NextResponse } from "next/server";
+import { Prisma } from "@prisma/client";
+import { format } from "date-fns";
 
 export async function POST(
   request: Request,
@@ -116,30 +118,82 @@ export async function GET(
   try {
     if (!params.storeId) {
       const response = new NextResponse("Store ID is required", { status: 400 });
-      response.headers.set('Access-Control-Allow-Origin', '*');
+      response.headers.set("Access-Control-Allow-Origin", "*");
       return response;
     }
 
-    const coupons = await db.coupon.findMany({
-      where: {
-        storeId: params.storeId,
-      },
-      include: {
-        products: {
-          include: {
-            product: true,
+    const { searchParams } = new URL(request.url);
+    const page   = parseInt(searchParams.get("page")  || "1", 10);
+    const limit  = parseInt(searchParams.get("limit") || "10", 10);
+    const search = searchParams.get("search") || "";
+
+    const skip = (page - 1) * limit;
+
+    const where: Prisma.CouponWhereInput = {
+      storeId: params.storeId,
+      ...(search
+        ? {
+            code: {
+              contains: search,
+              mode: Prisma.QueryMode.insensitive,
+            },
+          }
+        : {}),
+    };
+
+    const [coupons, total] = await Promise.all([
+      db.coupon.findMany({
+        where,
+        include: {
+          products: {
+            include: {
+              product: {
+                include: {
+                  variants: {
+                    take: 1,
+                  },
+                },
+              },
+            },
           },
         },
-      },
-    });
+        skip,
+        take: limit,
+        orderBy: { createdAt: "desc" },
+      }),
+      db.coupon.count({ where }),
+    ]);
 
-    const response = NextResponse.json(coupons);
-    response.headers.set('Access-Control-Allow-Origin', '*');
+    // Same formatting as in CouponsPage so the table receives exactly the same shape
+    const formattedCoupons = coupons.map((item) => ({
+      id: item.id,
+      code: item.code,
+      isActive: item.isActive,
+      value: item.value,
+      startDate: format(new Date(item.startDate), "MMMM do, yyyy"),
+      expiryDate: format(new Date(item.expiryDate), "MMMM do, yyyy"),
+      productCount: item.products.length,
+      productNames: item.products.map(
+        (cp) => cp.product.variants[0]?.name || "Unnamed Product"
+      ),
+      usagePerUser: item.usagePerUser,
+      usedCount: item.usedCount,
+      description: item.description || "",
+      createdAt: format(item.createdAt, "MMMM do, yyyy"),
+    }));
+
+    const response = NextResponse.json({
+      rows: formattedCoupons,
+      rowCount: total,
+      page,
+      limit,
+    });
+    response.headers.set("Access-Control-Allow-Origin", "*");
     return response;
   } catch (error) {
-    console.log("COUPON GET", error);
+    console.error("COUPON GET", error);
     const response = new NextResponse("Internal server error", { status: 500 });
-    response.headers.set('Access-Control-Allow-Origin', '*');
+    response.headers.set("Access-Control-Allow-Origin", "*");
     return response;
   }
 }

@@ -31,6 +31,21 @@ export const ProductList = ({
   const isAuthenticated = status === "authenticated";
   const userName = isAuthenticated ? session?.user?.name || "User" : "User";
 
+  const sortedProducts = data.slice(0, 5).map((product) => ({
+    ...product,
+    variants: product.variants.map((variant) => ({
+      ...variant,
+      images: [...variant.images].sort((a, b) => new Date(a?.createdAt).getTime() - new Date(b?.createdAt).getTime()),
+    })),
+  }));
+
+  const filteredProducts = sortedProducts.filter((product) =>
+  product.variants?.some((variant: any) =>
+    variant.variantPrices?.some((vp: any) => vp.price > 0)
+  )
+);
+
+
   return (
     <div className="space-y-2 md:space-y-8">
       {title.length > 0 && (
@@ -57,7 +72,7 @@ export const ProductList = ({
         }`}
         style={isSpaceTop ? { marginTop: "0px" } : {}}
       >
-        {data.slice(0, 5).map((product) => (
+        {filteredProducts.map((product) => (
           <div
             key={product.id}
             className={`flex-none w-[40vw] sm:w-[28vw] md:w-[25vw] lg:w-[25vw] ${className} ${

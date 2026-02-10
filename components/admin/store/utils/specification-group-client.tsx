@@ -27,10 +27,12 @@ interface SpecificationGroupColumn {
 
 interface SpecificationGroupClientProps {
   data: SpecificationGroupColumn[];
+  initialRowCount: number;
 }
 
 export const SpecificationGroupClient = ({
   data,
+  initialRowCount,
 }: SpecificationGroupClientProps) => {
   const router = useRouter();
   const params = useParams();
@@ -93,6 +95,28 @@ export const SpecificationGroupClient = ({
     } as DisplayColumnDef<SpecificationGroupColumn>,
   ];
 
+  const fetchSpecificationGroups = async ({
+    pageIndex,
+    pageSize,
+    filters,
+  }: {
+    pageIndex: number;
+    pageSize: number;
+    filters: { id: string; value: unknown }[];
+  }) => {
+    const searchValue = filters.find((f) => f.id === "name")?.value as string | undefined;
+
+    const url = `/api/admin/${process.env.NEXT_PUBLIC_STORE_ID}/specification-groups?page=${
+      pageIndex + 1
+    }&limit=${pageSize}${
+      searchValue ? `&search=${encodeURIComponent(searchValue)}` : ""
+    }`;
+
+    const res = await fetch(url);
+    if (!res.ok) throw new Error("Failed to fetch specification groups");
+    return res.json(); // { rows, rowCount }
+  };
+
   const onDelete = async () => {
     if (!selectedId) return;
     try {
@@ -126,7 +150,7 @@ export const SpecificationGroupClient = ({
       <div className="flex items-center justify-between">
         <Header
           title="Specification Groups"
-          badge={data.length.toString()}
+          badge={initialRowCount.toString()}
           description="Manage specification groups for your store"
         />
         <Button
@@ -139,7 +163,15 @@ export const SpecificationGroupClient = ({
         </Button>
       </div>
       <Separator />
-      <DataTable columns={columns} data={data} visibility searchKey="name" />
+      <DataTable
+        columns={columns}
+        data={data}
+        visibility
+        searchKey="name"
+        serverSide
+        fetchData={fetchSpecificationGroups}
+        initialRowCount={initialRowCount}
+      />
       <Header title="API" description="API calls for specification groups" />
       <ApiList entityName="specification-groups" entityIdName="groupId" />
     </>

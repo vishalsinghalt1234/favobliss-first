@@ -22,6 +22,13 @@ const BannerProductSection = (props: Props) => {
     locationGroups,
   } = props;
 
+  const filteredProducts = products.filter((product) =>
+  product.variants?.some((variant: any) =>
+    variant.variantPrices?.some((vp: any) => vp.price > 0)
+  )
+);
+
+
   return (
     <div className="w-full bg-[#292928] py-2 md:py-2 rounded-3xl">
       <div className="max-w-full mx-auto px-2">
@@ -47,7 +54,7 @@ const BannerProductSection = (props: Props) => {
             spaceBetween={5}
             grabCursor={true}
           >
-            {products.map((product) => (
+            {filteredProducts.map((product) => (
               <SwiperSlide key={product.id} className="flex-shrink-0 w-[40vw] max-w-[160px] min-w-[140px] mr-2">
                 <ProductCard data={product} locationGroups={locationGroups} />
               </SwiperSlide>
@@ -80,7 +87,7 @@ const BannerProductSection = (props: Props) => {
               spaceBetween={4}
               grabCursor={true}
             >
-              {products.map((product) => (
+              {filteredProducts.map((product) => (
                 <SwiperSlide
                   key={product.id}
                   className="h-full flex-shrink-0 w-full max-w-[200px] xl:max-w-[260px]"

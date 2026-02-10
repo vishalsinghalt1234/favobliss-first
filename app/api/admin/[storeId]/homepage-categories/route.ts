@@ -1,6 +1,9 @@
 import { auth } from "@/auth";
 import { db } from "@/lib/db";
 import { NextResponse } from "next/server";
+import { Prisma } from "@prisma/client";
+import {format} from "date-fns";
+
 
 export async function POST(
   request: Request,
@@ -50,6 +53,8 @@ export async function POST(
   }
 }
 
+
+
 export async function GET(
   request: Request,
   { params }: { params: { storeId: string } }
@@ -63,6 +68,7 @@ export async function GET(
     const homepageCategoryId = searchParams.get("homepageCategoryId");
 
     if (homepageCategoryId) {
+      // Keep detailed single-item fetch unchanged
       const homepageCategory = await db.homepageCategory.findUnique({
         where: {
           id: homepageCategoryId,
@@ -96,34 +102,69 @@ export async function GET(
       return NextResponse.json(homepageCategory);
     }
 
-    const homepageCategories = await db.homepageCategory.findMany({
-      where: {
-        storeId: params.storeId,
-      },
-      include: {
-        products: {
-          include: {
-            product: {
-              include: {
-                variants: {
-                  include: {
-                    images: true,
-                    variantPrices: true,
+    // ── Paginated list ───────────────────────────────────────────────
+    const page   = parseInt(searchParams.get("page")  || "1", 10);
+    const limit  = parseInt(searchParams.get("limit") || "10", 10);
+    const search = searchParams.get("search") || "";
+
+    const skip = (page - 1) * limit;
+
+    const where: Prisma.HomepageCategoryWhereInput = {
+      storeId: params.storeId,
+      ...(search
+        ? {
+            name: {
+              contains: search,
+              mode: Prisma.QueryMode.insensitive,
+            },
+          }
+        : {}),
+    };
+
+    const [homepageCategories, total] = await Promise.all([
+      db.homepageCategory.findMany({
+        where,
+        include: {
+          products: {
+            include: {
+              product: {
+                include: {
+                  variants: {
+                    take: 1,
                   },
                 },
-                category: true,
-                subCategory: true,
-                brand: true,
               },
             },
           },
         },
-      },
-    });
+        skip,
+        take: limit,
+        orderBy: { createdAt: "desc" },
+      }),
+      db.homepageCategory.count({ where }),
+    ]);
 
-    return NextResponse.json(homepageCategories);
+    // Format exactly the same way as in the server component
+    const formatted = homepageCategories.map((item) => ({
+      id: item.id,
+      name: item.name,
+      description: item.description || "No description",
+      link: item?.link || "/",
+      productCount: item.products.length,
+      productNames: item.products.map(
+        (cp) => cp.product.variants[0]?.name || "Unnamed Product"
+      ),
+      createdAt: format(item.createdAt, "MMMM do, yyyy"),
+    }));
+
+    return NextResponse.json({
+      rows: formatted,
+      rowCount: total,
+      page,
+      limit,
+    });
   } catch (error) {
-    console.log("[HOMEPAGECATEGORY_GET]", error);
+    console.error("[HOMEPAGECATEGORY_GET]", error);
     return new NextResponse("Internal server error", { status: 500 });
   }
 }

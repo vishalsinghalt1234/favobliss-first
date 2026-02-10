@@ -13,7 +13,9 @@ const LocationGroupsPage = async ({
 }: {
   params: { storeId: string };
 }) => {
-  const [locationGroups, locations] = await Promise.all([
+  const pageSize = 10;
+
+  const [locationGroups, total, locations] = await Promise.all([
     db.locationGroup.findMany({
       where: {
         storeId: params.storeId,
@@ -21,8 +23,15 @@ const LocationGroupsPage = async ({
       include: {
         locations: true,
       },
+      take: pageSize,
+      skip: 0,
       orderBy: {
         createdAt: "desc",
+      },
+    }),
+    db.locationGroup.count({
+      where: {
+        storeId: params.storeId,
       },
     }),
     db.location.findMany({
@@ -55,6 +64,7 @@ const LocationGroupsPage = async ({
         <LocationGroupClient
           data={formattedLocationGroups}
           locations={locations}
+          initialRowCount={total}
         />
       </div>
     </div>

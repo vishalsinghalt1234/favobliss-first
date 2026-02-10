@@ -9,6 +9,8 @@ export const metadata: Metadata = {
 };
 
 const ReviewsPage = async ({ params }: { params: { storeId: string } }) => {
+  const pageSize = 10;
+
   const reviews = await db.review.findMany({
     where: {
       product: {
@@ -19,7 +21,7 @@ const ReviewsPage = async ({ params }: { params: { storeId: string } }) => {
       product: {
         include: {
           variants: {
-            take: 1, // Get the first variant to use its name
+            take: 1,
             select: {
               name: true,
             },
@@ -28,15 +30,25 @@ const ReviewsPage = async ({ params }: { params: { storeId: string } }) => {
       },
       images: true,
     },
+    take: pageSize,
+    skip: 0,
     orderBy: {
       createdAt: "desc",
+    },
+  });
+
+  const total = await db.review.count({
+    where: {
+      product: {
+        storeId: params.storeId,
+      },
     },
   });
 
   const formattedReviews: ReviewColumn[] = reviews.map((item) => ({
     id: item.id,
     productId: item.productId,
-    productName: item.product.variants[0]?.name || "Unnamed Product", // Use variant name or fallback
+    productName: item.product.variants[0]?.name || "Unnamed Product",
     userName: item.userName,
     rating: item.rating,
     text: item.text,
@@ -47,7 +59,7 @@ const ReviewsPage = async ({ params }: { params: { storeId: string } }) => {
   return (
     <div className="flex flex-col">
       <div className="flex-1 space-y-4 p-8 pt-6">
-        <ReviewClient data={formattedReviews} />
+        <ReviewClient data={formattedReviews} initialRowCount={total} />
       </div>
     </div>
   );

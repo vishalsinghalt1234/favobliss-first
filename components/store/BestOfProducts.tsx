@@ -6,6 +6,7 @@ import { Product } from "@/types";
 import { FaStarOfLife } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 import { MdRoundedCorner } from "react-icons/md";
+import Image from "next/image";
 
 interface Props {
   products: Product[];
@@ -214,11 +215,14 @@ const BestOfProduct = (props: Props) => {
                     <div className="bg-gray-100 rounded-xl p-3 hover:shadow-lg transition-shadow duration-200 h-full">
                       {/* Product Image */}
                       <div className="aspect-square mb-3 flex items-center justify-center bg-white rounded-lg">
-                        <img
-                          src={image}
-                          alt={product.variants[0].name}
-                          className="w-full h-full object-contain rounded-lg p-2"
-                        />
+                        <div className="relative w-full h-full">
+                          <Image
+                            src={image}
+                            alt={product.variants[0].name}
+                            fill
+                            className="object-contain rounded-lg p-2"
+                          />
+                        </div>
                       </div>
 
                       {/* Product Details */}
@@ -288,11 +292,14 @@ const BestOfProduct = (props: Props) => {
                         <div className="bg-gray-100 rounded-2xl p-4 hover:shadow-lg transition-shadow duration-200 h-full">
                           {/* Product Image */}
                           <div className="aspect-square mb-4 flex items-center justify-center bg-white rounded-lg">
-                            <img
-                              src={image}
-                              alt={product.variants[0].name}
-                              className="w-full h-full object-contain rounded-lg p-2"
-                            />
+                            <div className="relative w-full h-full">
+                              <Image
+                                src={image}
+                                alt={product.variants[0].name}
+                                fill
+                                className="object-contain rounded-lg p-2"
+                              />
+                            </div>
                           </div>
 
                           {/* Product Details */}

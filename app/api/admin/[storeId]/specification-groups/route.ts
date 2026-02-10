@@ -2,6 +2,8 @@ import { auth } from "@/auth";
 import { db } from "@/lib/db";
 import { NextResponse } from "next/server";
 import { z } from "zod";
+import { Prisma } from "@prisma/client";
+import { format } from "date-fns";
 
 const SpecificationGroupSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -10,7 +12,7 @@ const SpecificationGroupSchema = z.object({
 // POST: Create a new specification group
 export async function POST(
   request: Request,
-  { params }: { params: { storeId: string } }
+  { params }: { params: { storeId: string } },
 ) {
   try {
     const session = await auth();
@@ -53,28 +55,58 @@ export async function POST(
   }
 }
 
-// GET: List all specification groups
 export async function GET(
   request: Request,
-  { params }: { params: { storeId: string } }
+  { params }: { params: { storeId: string } },
 ) {
   try {
     if (!params.storeId) {
       return new NextResponse("Store Id is required", { status: 400 });
     }
 
-    const specificationGroups = await db.specificationGroup.findMany({
-      where: {
-        storeId: params.storeId,
-      },
-      orderBy: {
-        createdAt: "desc",
-      },
-    });
+    const { searchParams } = new URL(request.url);
+    const page = parseInt(searchParams.get("page") || "1", 10);
+    const limit = parseInt(searchParams.get("limit") || "10", 10);
+    const search = searchParams.get("search") || "";
 
-    return NextResponse.json(specificationGroups);
+    const skip = (page - 1) * limit;
+
+    const where: Prisma.SpecificationGroupWhereInput = {
+      storeId: params.storeId,
+      ...(search
+        ? {
+            name: {
+              contains: search,
+              mode: Prisma.QueryMode.insensitive,
+            },
+          }
+        : {}),
+    };
+
+    const [specificationGroups, total] = await Promise.all([
+      db.specificationGroup.findMany({
+        where,
+        skip,
+        take: limit,
+        orderBy: { createdAt: "desc" },
+      }),
+      db.specificationGroup.count({ where }),
+    ]);
+
+    const formatted = specificationGroups.map((item) => ({
+      id: item.id,
+      name: item.name,
+      createdAt: format(item.createdAt, "MMMM do, yyyy"),
+    }));
+
+    return NextResponse.json({
+      rows: formatted,
+      rowCount: total,
+      page,
+      limit,
+    });
   } catch (error) {
-    console.log("[SPECIFICATION_GROUPS_GET]", error);
+    console.error("[SPECIFICATION_GROUPS_GET]", error);
     return new NextResponse("Internal server error", { status: 500 });
   }
 }

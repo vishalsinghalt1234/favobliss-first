@@ -1,6 +1,8 @@
 import { auth } from "@/auth";
 import { db } from "@/lib/db";
 import { NextResponse } from "next/server";
+import { Prisma } from "@prisma/client";
+import { format } from "date-fns";
 
 const allowedOrigins = [
   process.env.NEXT_PUBLIC_FRONTEND_URL,
@@ -10,7 +12,7 @@ const allowedOrigins = [
 
 export async function POST(
   request: Request,
-  { params }: { params: { storeId: string } }
+  { params }: { params: { storeId: string } },
 ) {
   try {
     const {
@@ -67,7 +69,7 @@ export async function POST(
       if (existingLocations.length !== locationIds.length) {
         return new NextResponse(
           "One or more location IDs are invalid or do not belong to this store",
-          { status: 400 }
+          { status: 400 },
         );
       }
     }
@@ -101,7 +103,7 @@ export async function POST(
 
 export async function GET(
   request: Request,
-  { params }: { params: { storeId: string } }
+  { params }: { params: { storeId: string } },
 ) {
   try {
     if (!params.storeId) {
@@ -129,18 +131,55 @@ export async function GET(
       return NextResponse.json(locationGroup);
     }
 
-    const locationGroups = await db.locationGroup.findMany({
-      where: {
-        storeId: params.storeId,
-      },
-      include: {
-        locations: true,
-      },
-    });
+    const page = parseInt(searchParams.get("page") || "1", 10);
+    const limit = parseInt(searchParams.get("limit") || "10", 10);
+    const search = searchParams.get("search") || "";
 
-    return NextResponse.json(locationGroups);
+    const skip = (page - 1) * limit;
+
+    const where: Prisma.LocationGroupWhereInput = {
+      storeId: params.storeId,
+      ...(search
+        ? {
+            name: {
+              contains: search,
+              mode: Prisma.QueryMode.insensitive,
+            },
+          }
+        : {}),
+    };
+
+    const [locationGroups, total] = await Promise.all([
+      db.locationGroup.findMany({
+        where,
+        include: {
+          locations: true,
+        },
+        skip,
+        take: limit,
+        orderBy: { createdAt: "desc" },
+      }),
+      db.locationGroup.count({ where }),
+    ]);
+
+    const formatted = locationGroups.map((item) => ({
+      id: item.id,
+      name: item.name,
+      locationCount: item.locations.length,
+      isCodAvailable: item.isCodAvailable,
+      isExpressDelivery: item.isExpressDelivery ?? false,
+      deliveryDays: item.deliveryDays ?? 0,
+      createdAt: format(item.createdAt, "MMMM do, yyyy"),
+    }));
+
+    return NextResponse.json({
+      rows: formatted,
+      rowCount: total,
+      page,
+      limit,
+    });
   } catch (error) {
-    console.log("[LOCATION_GROUP_GET]", error);
+    console.error("[LOCATION_GROUP_GET]", error);
     return new NextResponse("Internal server error", { status: 500 });
   }
 }

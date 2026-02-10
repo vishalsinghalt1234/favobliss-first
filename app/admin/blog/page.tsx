@@ -13,11 +13,17 @@ interface BlogPageProps {
 }
 
 const BlogPage = async ({ params }: BlogPageProps) => {
+  const pageSize = 10;
+  const where = {};
+
   const blogs = await db.blog.findMany({
-    orderBy: {
-      createdAt: "desc",
-    },
+    where,
+    take: pageSize,
+    skip: 0,
+    orderBy: { createdAt: "desc" },
   });
+
+  const total = await db.blog.count({ where });
 
   const formattedBlogs: BlogColumn[] = blogs.map((item) => ({
     id: item.id,
@@ -31,7 +37,7 @@ const BlogPage = async ({ params }: BlogPageProps) => {
   return (
     <div className="flex flex-col">
       <div className="flex-1 space-y-4 p-8 pt-6">
-        <BlogClient data={formattedBlogs} />
+        <BlogClient data={formattedBlogs} initialRowCount={total} />
       </div>
     </div>
   );

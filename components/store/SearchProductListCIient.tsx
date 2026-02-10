@@ -26,7 +26,9 @@ export default function SearchProductListClient({
 }: SearchProductListClientProps) {
   const searchParams = useSearchParams();
   const [filteredProducts, setFilteredProducts] = useState<any[]>(allProducts);
-  const [totalProducts, setTotalProducts] = useState<number>(allProducts.length);
+  const [totalProducts, setTotalProducts] = useState<number>(
+    allProducts.length,
+  );
 
   const currentPage = parseInt(searchParams.get("page") || "1", 10);
   const pageSize = 12;
@@ -37,14 +39,14 @@ export default function SearchProductListClient({
     const colorId = searchParams.get("colorId");
     if (colorId) {
       products = products.filter((p: any) =>
-        p.variants.some((v: any) => v.colorId === colorId)
+        p.variants.some((v: any) => v.colorId === colorId),
       );
     }
 
     const sizeId = searchParams.get("sizeId");
     if (sizeId) {
       products = products.filter((p: any) =>
-        p.variants.some((v: any) => v.sizeId === sizeId)
+        p.variants.some((v: any) => v.sizeId === sizeId),
       );
     }
 
@@ -64,8 +66,8 @@ export default function SearchProductListClient({
           v.variantPrices.some((vp: any) => {
             const price = vp.price;
             return price >= minPrice && price <= maxPrice;
-          })
-        )
+          }),
+        ),
       );
     }
 
@@ -97,6 +99,12 @@ export default function SearchProductListClient({
         return maxDisc >= minDiscount;
       });
     }
+    
+    products = products.filter((p: any) =>
+      p.variants?.some((v: any) =>
+        v.variantPrices?.some((vp: any) => vp.price > 0),
+      ),
+    );
 
     setFilteredProducts(products);
     setTotalProducts(products.length);
@@ -104,7 +112,7 @@ export default function SearchProductListClient({
 
   const paginatedProducts = filteredProducts.slice(
     (currentPage - 1) * pageSize,
-    currentPage * pageSize
+    currentPage * pageSize,
   );
 
   return (
@@ -125,7 +133,10 @@ export default function SearchProductListClient({
 
       {totalPages > 1 && (
         <div className="w-full flex items-center justify-center pt-12">
-          <PaginationComponent currentPage={currentPage} totalPages={totalPages} />
+          <PaginationComponent
+            currentPage={currentPage}
+            totalPages={totalPages}
+          />
         </div>
       )}
     </>

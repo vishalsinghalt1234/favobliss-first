@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { ChevronDown } from "lucide-react";
+import Image from "next/image";
 
 const emiOptions = [
   { duration: "1 Year", price: "₹2529 or ₹211/month" },
@@ -15,7 +16,13 @@ const ZipCarePlan: React.FC = () => {
       {/* Header */}
       <div className="flex items-start justify-between">
         <div className="flex gap-4 items-start">
-          <img src="/zipcare.webp" alt="ZipCare" className="w-12 h-12" />
+          <Image
+            src="/zipcare.webp"
+            alt="ZipCare"
+            width={48}
+            height={48}
+            className="w-12 h-12"
+          />
           <div>
             <h2 className="font-semibold text-black">
               ZipCare Protect - Advanced

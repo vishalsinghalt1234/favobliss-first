@@ -15,7 +15,7 @@ import { useSession } from "next-auth/react";
 import { useAddress } from "@/hooks/use-address";
 import PincodeDialog from "./PincodeDialog";
 import { getLocationGroups } from "@/actions/get-location-group";
-import Image from '@/components/image';
+import Image from "@/components/image";
 import { useDebouncedCallback } from "@/hooks/use-debouncecallback";
 
 const searchCategories = [
@@ -568,10 +568,11 @@ export default function DynamicHeader({
                                   >
                                     <div className="w-12 h-12 mb-2 rounded-lg bg-gray-100 flex items-center justify-center overflow-hidden">
                                       {subCategory.icon ? (
-                                        <img
+                                        <Image
                                           src={subCategory.icon}
                                           alt={subCategory.name}
-                                          className="w-full h-full object-cover"
+                                          fill
+                                          className="object-cover"
                                           loading="lazy"
                                         />
                                       ) : (
@@ -752,12 +753,14 @@ export default function DynamicHeader({
                                   <div className="flex items-center gap-3">
                                     {product.variants[0]?.images[0] ? (
                                       <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                                        <img
+                                        <Image
                                           src={
                                             product.variants[0].images[0].url
                                           }
                                           alt={product.variants[0].name}
-                                          className="w-10 h-10 object-contain rounded"
+                                          width={40}
+                                          height={40}
+                                          className="object-contain rounded"
                                         />
                                       </div>
                                     ) : (

@@ -1,7 +1,6 @@
 import { Metadata } from "next";
 import { format } from "date-fns";
 import { db } from "@/lib/db";
-
 import { SubCategoryColumn } from "@/components/admin/store/utils/columns";
 import { SubCategoryClient } from "@/components/admin/store/utils/subcategory-client";
 
@@ -14,6 +13,8 @@ const SubCategoriesPage = async ({
 }: {
   params: { storeId: string };
 }) => {
+  const pageSize = 10;
+
   const subCategories = await db.subCategory.findMany({
     where: {
       storeId: params.storeId,
@@ -22,8 +23,16 @@ const SubCategoriesPage = async ({
       category: true,
       parent: true,
     },
+    take: pageSize,
+    skip: 0,
     orderBy: {
       createdAt: "desc",
+    },
+  });
+
+  const total = await db.subCategory.count({
+    where: {
+      storeId: params.storeId,
     },
   });
 
@@ -40,7 +49,10 @@ const SubCategoriesPage = async ({
   return (
     <div className="flex flex-col">
       <div className="flex-1 space-y-4 p-8 pt-6">
-        <SubCategoryClient data={formattedSubCategories} />
+        <SubCategoryClient 
+          data={formattedSubCategories} 
+          initialRowCount={total} 
+        />
       </div>
     </div>
   );

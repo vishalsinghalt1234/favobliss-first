@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import Image from "@/components/image";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Autoplay, Navigation, Pagination } from "swiper/modules";
+import { Autoplay, Navigation } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/autoplay";
@@ -74,12 +74,12 @@ const HeroSlider: React.FC = () => {
     <section className="w-full hidden md:block mb-7">
       <div className="w-full aspect-[3/1] max-h-[600px] overflow-hidden px-4 md:px-6 border-0">
         <Swiper
-          modules={[Autoplay, Navigation, Pagination]}
-          pagination={{
-            el: ".my-pagination",
-            clickable: true,
-            type: "bullets",
-          }}
+          modules={[Autoplay, Navigation]}
+          //   pagination={{
+          //   el: ".my-pagination",
+          //   clickable: true,
+          //   type: "bullets",
+          // }}
           spaceBetween={0}
           slidesPerView={1}
           loop={true}
@@ -119,9 +119,9 @@ const HeroSlider: React.FC = () => {
           </div>
         </Swiper>
 
-        <div className="my-pagination mt-4 flex justify-center items-center gap-2 absolute h-[20px] !top-[6%] w-full"></div>
+        {/* <div className="my-pagination mt-4 flex justify-center items-center gap-2 absolute h-[20px] !top-[6%] w-full"></div> */}
       </div>
-      <style jsx global>{`
+      {/* <style jsx global>{`
         .swiper-pagination-bullet {
           width: 25px;
           height: 8px;
@@ -145,7 +145,7 @@ const HeroSlider: React.FC = () => {
           opacity: 1;
           border-radius: 4px;
         }
-      `}</style>
+      `}</style> */}
     </section>
   );
 };

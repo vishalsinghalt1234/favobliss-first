@@ -1,6 +1,7 @@
 import { auth } from "@/auth";
 import { db } from "@/lib/db";
 import { NextResponse } from "next/server";
+import { Prisma } from "@prisma/client";
 
 export async function POST(
   request: Request,
@@ -61,6 +62,8 @@ export async function POST(
   }
 }
 
+
+
 export async function GET(
   request: Request,
   { params }: { params: { storeId: string } }
@@ -76,27 +79,54 @@ export async function GET(
     if (pincode) {
       const location = await db.location.findUnique({
         where: {
-          pincode,
-          storeId: params.storeId,
+            pincode,
         },
       });
 
       if (!location) {
-        return new NextResponse("Brand not found", { status: 404 });
+        return new NextResponse("Location not found", { status: 404 });
       }
 
       return NextResponse.json(location);
     }
 
-    const locations = await db.location.findMany({
-      where: {
-        storeId: params.storeId,
-      },
-    });
+    const page   = parseInt(searchParams.get("page")  || "1", 10);
+    const limit  = parseInt(searchParams.get("limit") || "10", 10);
+    const search = searchParams.get("search") || "";
 
-    return NextResponse.json(locations);
+    const skip = (page - 1) * limit;
+
+    const where: Prisma.LocationWhereInput = {
+      storeId: params.storeId,
+      ...(search
+        ? {
+            OR: [
+              { city: { contains: search, mode: Prisma.QueryMode.insensitive } },
+              { pincode: { contains: search } },
+              { state: { contains: search, mode: Prisma.QueryMode.insensitive } },
+            ],
+          }
+        : {}),
+    };
+
+    const [locations, total] = await Promise.all([
+      db.location.findMany({
+        where,
+        skip,
+        take: limit,
+        orderBy: { createdAt: "desc" },
+      }),
+      db.location.count({ where }),
+    ]);
+
+    return NextResponse.json({
+      rows: locations,
+      rowCount: total,
+      page,
+      limit,
+    });
   } catch (error) {
-    console.log("[LOCATION_GET]", error);
+    console.error("[LOCATION_GET]", error);
     return new NextResponse("Internal server error", { status: 500 });
   }
 }

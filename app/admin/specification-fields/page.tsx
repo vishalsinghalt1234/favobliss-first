@@ -1,7 +1,6 @@
 import { Metadata } from "next";
-import { db } from "@/lib/db";
 import { format } from "date-fns";
-
+import { db } from "@/lib/db";
 import { SpecificationFieldClient } from "@/components/admin/store/utils/specification-field-client";
 
 interface SpecificationFieldColumn {
@@ -20,6 +19,8 @@ const SpecificationFieldsPage = async ({
 }: {
   params: { storeId: string };
 }) => {
+  const pageSize = 10;
+
   const specificationFields = await db.specificationField.findMany({
     where: {
       storeId: params.storeId,
@@ -27,8 +28,16 @@ const SpecificationFieldsPage = async ({
     include: {
       group: true,
     },
+    take: pageSize,
+    skip: 0,
     orderBy: {
       createdAt: "desc",
+    },
+  });
+
+  const total = await db.specificationField.count({
+    where: {
+      storeId: params.storeId,
     },
   });
 
@@ -44,7 +53,7 @@ const SpecificationFieldsPage = async ({
   return (
     <div className="flex flex-col">
       <div className="flex-1 space-y-4 p-8 pt-6">
-        <SpecificationFieldClient data={formattedFields} />
+        <SpecificationFieldClient data={formattedFields} initialRowCount={total} />
       </div>
     </div>
   );

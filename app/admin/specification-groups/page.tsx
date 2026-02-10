@@ -1,7 +1,6 @@
 import { Metadata } from "next";
-import { db } from "@/lib/db";
 import { format } from "date-fns";
-
+import { db } from "@/lib/db";
 import { SpecificationGroupClient } from "@/components/admin/store/utils/specification-group-client";
 
 interface SpecificationGroupColumn {
@@ -19,12 +18,22 @@ const SpecificationGroupsPage = async ({
 }: {
   params: { storeId: string };
 }) => {
+  const pageSize = 10;
+
   const specificationGroups = await db.specificationGroup.findMany({
     where: {
       storeId: params.storeId,
     },
+    take: pageSize,
+    skip: 0,
     orderBy: {
       createdAt: "desc",
+    },
+  });
+
+  const total = await db.specificationGroup.count({
+    where: {
+      storeId: params.storeId,
     },
   });
 
@@ -39,7 +48,10 @@ const SpecificationGroupsPage = async ({
   return (
     <div className="flex flex-col">
       <div className="flex-1 space-y-4 p-8 pt-6">
-        <SpecificationGroupClient data={formattedGroups} />
+        <SpecificationGroupClient 
+          data={formattedGroups} 
+          initialRowCount={total} 
+        />
       </div>
     </div>
   );

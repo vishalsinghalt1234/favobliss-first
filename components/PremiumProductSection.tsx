@@ -1,5 +1,6 @@
 import type React from "react";
 import Link from "next/link";
+import Image from "next/image";
 
 interface PremiumProduct {
   id: string;
@@ -25,14 +26,17 @@ const PremiumProductsSection: React.FC<PremiumProductsSectionProps> = ({
       className={`rounded-3xl w-full max-w-full px-4 py-8 md:p-8 md:pt-[48px] pt-[40px] ${className}`}
       style={{ backgroundColor }}
     >
-            {/* Top Banner */}
-      <div className="w-full mb-6">
-        <img
-          src="/assets/home-banner/home-banner-2.jpeg"
-          alt="Home Banner"
-          className="w-full h-[140px] sm:h-[170px] md:h-[220px] object-cover rounded-2xl"
-          loading="lazy"
-        />
+      {/* Top Banner */}
+      <div className="w-full mb-6 relative">
+        <div className="relative w-full h-[140px] sm:h-[170px] md:h-[220px]">
+          <Image
+            src="/assets/home-banner/home-banner-2.jpeg"
+            alt="Home Banner"
+            fill
+            className="object-cover rounded-2xl"
+            priority={false}
+          />
+        </div>
       </div>
 
       <div className="flex overflow-x-auto space-x-6 pb-1 md:pb-4 scrollbar-hide snap-x snap-mandatory justify-between">
@@ -57,13 +61,13 @@ const PremiumProductCard: React.FC<PremiumProductCardProps> = ({ product }) => {
   return (
     <Link href={product.link}>
       <div className="group cursor-pointer">
-        <div className="">
-          <div>
-            <img
+        <div>
+          <div className="relative w-full h-full">
+            <Image
               src={product.image || "/placeholder.svg"}
               alt={product.title}
+              fill
               className="object-cover max-w-full max-h-full"
-              loading="lazy"
             />
           </div>
         </div>

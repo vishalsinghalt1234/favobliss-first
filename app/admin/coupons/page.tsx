@@ -1,15 +1,16 @@
 import { Metadata } from "next";
 import { format } from "date-fns";
 import { db } from "@/lib/db";
-
-import { CouponClient } from "@/components/admin/store/utils/coupon-client";
 import { CouponColumn } from "@/components/admin/store/utils/columns";
+import { CouponClient } from "@/components/admin/store/utils/coupon-client";
 
 export const metadata: Metadata = {
   title: "Store | Coupons",
 };
 
 const CouponsPage = async ({ params }: { params: { storeId: string } }) => {
+  const pageSize = 10;
+
   const coupons = await db.coupon.findMany({
     where: {
       storeId: params.storeId,
@@ -27,8 +28,16 @@ const CouponsPage = async ({ params }: { params: { storeId: string } }) => {
         },
       },
     },
+    take: pageSize,
+    skip: 0,
     orderBy: {
       createdAt: "desc",
+    },
+  });
+
+  const total = await db.coupon.count({
+    where: {
+      storeId: params.storeId,
     },
   });
 
@@ -52,7 +61,7 @@ const CouponsPage = async ({ params }: { params: { storeId: string } }) => {
   return (
     <div className="flex flex-col">
       <div className="flex-1 space-y-4 p-8 pt-6">
-        <CouponClient data={formattedCoupons} />
+        <CouponClient data={formattedCoupons} initialRowCount={total} />
       </div>
     </div>
   );

@@ -8,6 +8,7 @@ import { NavbarActions } from "./navbar-actions";
 import { cn } from "@/lib/utils";
 // import { getWishlistItems } from "@/actions/get-whishlist";
 import { MobileNavbar } from "./mobile-nav";
+import Image from "next/image";
 
 const font = Pacifico({
   weight: ["400"],
@@ -91,10 +92,16 @@ export const Navbar = async () => {
   return (
     <nav className="relative flex w-full bg-black">
       <div className="container bg-black text-white z-50 mx-auto sticky top-0 flex justify-between items-center bg-black w-full">
-        <div className="relative block  text-xl text-teal-600 font-bold">
-          <a href="#" className="hover:text-teal-900">
-            <img src="/assets/favo-logo.jpg" width={150} />
-          </a>
+        <div className="relative block text-xl text-teal-600 font-bold">
+          <Link href="/" className="hover:text-teal-900">
+            <Image
+              src="/assets/favo-logo.jpg"
+              alt="Favo Logo"
+              width={150}
+              height={150}
+              priority
+            />
+          </Link>
         </div>
         <ul className="flex">
           {/* <li className="hover:bg-[#f09421] hover:text-white">

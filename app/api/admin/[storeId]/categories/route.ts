@@ -3,14 +3,14 @@ import { db } from "@/lib/db";
 import { NextResponse } from "next/server";
 import { CategoryFormSchema } from "@/schemas/admin/category-form-schema";
 import { revalidatePath, revalidateTag } from "next/cache";
+import { Prisma } from "@prisma/client";
 
 const PRODUCT_TAG = "products";
 const CATEGORY_TAG = "categories";
 
-
 export async function POST(
   request: Request,
-  { params }: { params: { storeId: string } }
+  { params }: { params: { storeId: string } },
 ) {
   try {
     const session = await auth();
@@ -77,22 +77,20 @@ export async function POST(
 
 export async function GET(
   request: Request,
-  { params }: { params: { storeId: string } }
+  { params }: { params: { storeId: string } },
 ) {
   try {
     if (!params.storeId) {
-      return new NextResponse("Store Id is required", { status: 400 });
+      return new NextResponse("Store ID is required", { status: 400 });
     }
 
     const { searchParams } = new URL(request.url);
     const slug = searchParams.get("slug");
 
     if (slug) {
+      // Keep your existing slug logic (with nested includes if needed)
       const category = await db.category.findUnique({
-        where: {
-          slug,
-          storeId: params.storeId,
-        },
+        where: { slug },
         include: {
           subCategories: {
             include: {
@@ -117,46 +115,47 @@ export async function GET(
       return NextResponse.json(category);
     }
 
-    const categories = await db.category.findMany({
-      where: {
-        storeId: params.storeId,
-      },
-      include: {
-        subCategories: {
-          include: {
-            childSubCategories: {
-              include: {
-                childSubCategories: {
-                  include: {
-                    childSubCategories: true,
-                  },
-                },
-              },
+    // ── Pagination + Search support ─────────────────────────────────
+    const page = parseInt(searchParams.get("page") || "1", 10);
+    const limit = parseInt(searchParams.get("limit") || "10", 10);
+    const search = searchParams.get("search") || "";
+
+    const skip = (page - 1) * limit;
+
+    const where: Prisma.CategoryWhereInput = {
+      storeId: params.storeId,
+      ...(search
+        ? {
+            name: {
+              contains: search,
+              mode: Prisma.QueryMode.insensitive,
             },
-          },
-        },
-      },
+          }
+        : {}),
+    };
+
+    const [categories, total] = await Promise.all([
+      db.category.findMany({
+        where,
+        skip,
+        take: limit,
+        orderBy: { createdAt: "desc" },
+      }),
+      db.category.count({ where }),
+    ]);
+
+    // If you still need the nested subCategories structure in paginated list,
+    // add include here (but beware of performance with deep nesting)
+    // For admin table listing, you probably don't need deep nesting → can simplify
+
+    return NextResponse.json({
+      rows: categories,
+      rowCount: total,
+      page,
+      limit,
     });
-
-    const transformedCategories = categories.map((category) => ({
-      ...category,
-      subCategories: category.subCategories
-        .filter((sub) => sub.parentId === null)
-        .map((sub) => ({
-          ...sub,
-          childSubCategories: sub.childSubCategories.map((child) => ({
-            ...child,
-            childSubCategories: child.childSubCategories.map((grandchild) => ({
-              ...grandchild,
-              childSubCategories: grandchild.childSubCategories || [],
-            })),
-          })),
-        })),
-    }));
-
-    return NextResponse.json(transformedCategories);
   } catch (error) {
-    console.log("[CATEGORIES_GET]", error);
+    console.error("[CATEGORIES_GET]", error);
     return new NextResponse("Internal server error", { status: 500 });
   }
 }
