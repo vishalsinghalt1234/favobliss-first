@@ -1,40 +1,44 @@
-import React from 'react';
-import { FaStar, FaRegHeart } from 'react-icons/fa';
+import Image from "next/image";
+import React from "react";
+import { FaStar, FaRegHeart } from "react-icons/fa";
 
 const products = [
   {
     id: 1,
-    title: 'TCL C655 109.22 cm (43 inch) QLED 4K Ultra HD',
-    image: 'https://media-ik.croma.com/prod/https://media.croma.com/image/upload/v1738250068/Croma%20Assets/Entertainment/Television/Images/306516_0_illijz.png?tr=w-720',
+    title: "TCL C655 109.22 cm (43 inch) QLED 4K Ultra HD",
+    image:
+      "https://media-ik.croma.com/prod/https://media.croma.com/image/upload/v1738250068/Croma%20Assets/Entertainment/Television/Images/306516_0_illijz.png?tr=w-720",
     price: 27990,
     mrp: 61990,
     rating: 4,
   },
   {
     id: 2,
-    title: 'SAMSUNG Series 5 108 cm (43 inch) Full HD LED Tizen',
-    image: 'https://media-ik.croma.com/prod/https://media.croma.com/image/upload/v1738247703/Croma%20Assets/Entertainment/Television/Images/261175_0_h4ptfi.png?tr=w-720',
+    title: "SAMSUNG Series 5 108 cm (43 inch) Full HD LED Tizen",
+    image:
+      "https://media-ik.croma.com/prod/https://media.croma.com/image/upload/v1738247703/Croma%20Assets/Entertainment/Television/Images/261175_0_h4ptfi.png?tr=w-720",
     price: 23490,
     mrp: 37900,
     rating: 5,
   },
   {
     id: 3,
-    title: 'TOSHIBA C350NP 108 cm (43 inch) 4K Ultra HD LED',
-    image: 'https://media-ik.croma.com/prod/https://media.croma.com/image/upload/v1738247703/Croma%20Assets/Entertainment/Television/Images/261175_0_h4ptfi.png?tr=w-720',
+    title: "TOSHIBA C350NP 108 cm (43 inch) 4K Ultra HD LED",
+    image:
+      "https://media-ik.croma.com/prod/https://media.croma.com/image/upload/v1738247703/Croma%20Assets/Entertainment/Television/Images/261175_0_h4ptfi.png?tr=w-720",
     price: 23999,
     mrp: 44999,
     rating: 0,
   },
   {
     id: 4,
-    title: 'Xiaomi A Series 80 cm (32 inch) HD Ready LED Smart',
-    image: 'https://media-ik.croma.com/prod/https://media.croma.com/image/upload/v1738247703/Croma%20Assets/Entertainment/Television/Images/261175_0_h4ptfi.png?tr=w-720',
+    title: "Xiaomi A Series 80 cm (32 inch) HD Ready LED Smart",
+    image:
+      "https://media-ik.croma.com/prod/https://media.croma.com/image/upload/v1738247703/Croma%20Assets/Entertainment/Television/Images/261175_0_h4ptfi.png?tr=w-720",
     price: 11999,
     mrp: 24999,
     rating: 5,
   },
-  
 ];
 
 const BestsellerSection = () => {
@@ -55,11 +59,14 @@ const BestsellerSection = () => {
               </button>
 
               {/* Image */}
-              <img
-                src={product.image}
-                alt={product.title}
-                className="w-full h-44 object-contain mb-4"
-              />
+              <div className="relative w-full h-44 mb-4">
+                <Image
+                  src={product.image}
+                  alt={product.title}
+                  fill
+                  className="object-contain"
+                />
+              </div>
 
               {/* Title */}
               <h3 className="text-sm font-medium mb-2 line-clamp-2">
@@ -68,7 +75,7 @@ const BestsellerSection = () => {
 
               {/* Price */}
               <div className="text-lg font-semibold">
-                ₹{product.price.toLocaleString()}{' '}
+                ₹{product.price.toLocaleString()}{" "}
                 <span className="line-through text-gray-400 text-sm ml-1">
                   ₹{product.mrp.toLocaleString()}
                 </span>
@@ -81,7 +88,7 @@ const BestsellerSection = () => {
                     key={i}
                     size={16}
                     className={`mr-1 ${
-                      i < product.rating ? 'text-green-400' : 'text-gray-600'
+                      i < product.rating ? "text-green-400" : "text-gray-600"
                     }`}
                   />
                 ))}

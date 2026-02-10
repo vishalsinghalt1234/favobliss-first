@@ -9,6 +9,7 @@ import { getSubCategoryById } from "@/actions/get-subcategory";
 import { VerifiedBadgePremium } from "./verified-badge";
 import { Review } from "@/types";
 import { getReviews } from "@/actions/get-review";
+import Image from "next/image";
 
 interface ProductReviewsProps {
   productId: string;
@@ -163,7 +164,7 @@ export const ProductReviews = (props: ProductReviewsProps) => {
               (
                 categoryRatingsMap[categoryName].total /
                 categoryRatingsMap[categoryName].count
-              ).toFixed(2)
+              ).toFixed(2),
             )
           : 0,
       }));
@@ -210,7 +211,7 @@ export const ProductReviews = (props: ProductReviewsProps) => {
           headers: {
             "Content-Type": "application/json",
           },
-        }
+        },
       );
 
       if (!response.ok) {
@@ -272,7 +273,7 @@ export const ProductReviews = (props: ProductReviewsProps) => {
       ...img,
       reviewId: review.id,
       userName: review.userName,
-    }))
+    })),
   );
 
   const allReviewVideos = reviews.flatMap((review) =>
@@ -280,7 +281,7 @@ export const ProductReviews = (props: ProductReviewsProps) => {
       ...vid,
       reviewId: review.id,
       userName: review.userName,
-    }))
+    })),
   );
 
   const canDeleteReview = (review: Review) => {
@@ -351,10 +352,12 @@ export const ProductReviews = (props: ProductReviewsProps) => {
                   className="flex-shrink-0 relative cursor-pointer group"
                   onClick={() => openImageModal(image.url)}
                 >
-                  <img
+                  <Image
                     src={image.url}
                     alt={`Customer photo ${index + 1}`}
-                    className="h-16 w-16 object-cover rounded-lg border-2 border-gray-200 group-hover:border-blue-400 transition-colors"
+                    className="object-cover rounded-lg border-2 border-gray-200 group-hover:border-blue-400 transition-colors"
+                    width={64}
+                    height={64}
                   />
                   <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-opacity rounded-lg flex items-center justify-center">
                     <span className="text-white opacity-0 group-hover:opacity-100 text-xs">
@@ -427,11 +430,14 @@ export const ProductReviews = (props: ProductReviewsProps) => {
                       className="relative group cursor-pointer"
                       onClick={() => openImageModal(image.url)}
                     >
-                      <img
-                        src={image.url}
-                        alt={`Customer photo ${index + 1}`}
-                        className="w-full h-48 object-cover rounded-lg border group-hover:border-blue-400 transition-colors"
-                      />
+                      <div className="relative w-full h-48">
+                        <Image
+                          src={image.url}
+                          alt={`Customer photo ${index + 1}`}
+                          fill
+                          className="object-cover rounded-lg border group-hover:border-blue-400 transition-colors"
+                        />
+                      </div>
                       <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-opacity rounded-lg flex items-center justify-center">
                         <span className="text-white opacity-0 group-hover:opacity-100 text-xs">
                           View
@@ -517,7 +523,7 @@ export const ProductReviews = (props: ProductReviewsProps) => {
                 <div className="flex items-center justify-between overflow-x-auto scrollbar-hide gap-6">
                   {categoryAverages.map((cat) => {
                     const reviewCategories = subCategory.reviewCategories.map(
-                      (rc: { name: string }) => rc.name
+                      (rc: { name: string }) => rc.name,
                     );
                     if (!reviewCategories.includes(cat.categoryName))
                       return null;
@@ -587,7 +593,9 @@ export const ProductReviews = (props: ProductReviewsProps) => {
                     </div>
                     <div className="text-sm text-gray-500">
                       {new Date(
-                        review.customDate ? review.customDate : review.createdAt
+                        review.customDate
+                          ? review.customDate
+                          : review.createdAt,
                       ).toLocaleDateString("en-US", {
                         year: "numeric",
                         month: "long",
@@ -603,8 +611,8 @@ export const ProductReviews = (props: ProductReviewsProps) => {
                               ? review.rating >= 4
                                 ? "text-green-500"
                                 : review.rating >= 3
-                                ? "text-yellow-400"
-                                : "text-red-500"
+                                  ? "text-yellow-400"
+                                  : "text-red-500"
                               : "text-gray-300"
                           }`}
                         />
@@ -627,11 +635,13 @@ export const ProductReviews = (props: ProductReviewsProps) => {
                         review.videos.length > 0) && (
                         <div className="flex gap-2 mb-3 overflow-x-auto pb-1 max-w-[60vw] md:max-w-[70vw]">
                           {review.images.map((image, index) => (
-                            <img
+                            <Image
                               key={`image-${index}`}
                               src={image.url}
                               alt={`Review image ${index + 1}`}
-                              className="h-20 w-20 object-cover rounded-lg border cursor-pointer flex-shrink-0"
+                              width={80}
+                              height={80}
+                              className="object-cover rounded-lg border cursor-pointer flex-shrink-0"
                               onClick={() => openImageModal(image.url)}
                             />
                           ))}
@@ -675,8 +685,8 @@ export const ProductReviews = (props: ProductReviewsProps) => {
                           ? review.rating >= 4
                             ? "text-green-500"
                             : review.rating >= 3
-                            ? "text-yellow-400"
-                            : "text-red-500"
+                              ? "text-yellow-400"
+                              : "text-red-500"
                           : "text-gray-300"
                       }`}
                     />
@@ -757,7 +767,7 @@ export const ProductReviews = (props: ProductReviewsProps) => {
           className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50"
           onClick={closeImageModal}
         >
-          <div 
+          <div
             className="relative max-w-4xl max-h-[90vh] p-4 flex items-center justify-center"
             onClick={(e) => e.stopPropagation()}
           >
@@ -768,12 +778,15 @@ export const ProductReviews = (props: ProductReviewsProps) => {
             >
               <FaArrowLeft className="w-5 h-5 text-gray-700" />
             </button>
-            <img
-              src={allReviewImages[currentImageIndex]?.url || ""}
-              alt="Review image"
-              className="max-w-full max-h-full object-contain rounded-lg cursor-pointer"
-              onClick={(e) => e.stopPropagation()}
-            />
+            <div className="relative max-w-full max-h-full">
+              <Image
+                src={allReviewImages[currentImageIndex]?.url || ""}
+                alt="Review image"
+                fill
+                className="object-contain rounded-lg cursor-pointer"
+                onClick={(e) => e.stopPropagation()}
+              />
+            </div>
             <button
               onClick={handleNextImage}
               className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white rounded-full p-3 hover:bg-gray-100 transition-colors shadow-lg disabled:opacity-50"

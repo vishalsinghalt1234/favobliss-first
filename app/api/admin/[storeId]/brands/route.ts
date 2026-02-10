@@ -1,6 +1,7 @@
 import { auth } from "@/auth";
 import { db } from "@/lib/db";
 import { NextResponse } from "next/server";
+import { Prisma } from "@prisma/client";
 
 export async function POST(
   request: Request,
@@ -67,6 +68,7 @@ export async function POST(
   }
 }
 
+
 export async function GET(
   request: Request,
   { params }: { params: { storeId: string } }
@@ -82,8 +84,8 @@ export async function GET(
     if (slug) {
       const brand = await db.brand.findUnique({
         where: {
-          slug,
-          storeId: params.storeId,
+            slug,
+            storeId: params.storeId,
         },
       });
 
@@ -94,15 +96,42 @@ export async function GET(
       return NextResponse.json(brand);
     }
 
-    const brands = await db.brand.findMany({
-      where: {
-        storeId: params.storeId,
-      },
-    });
+    const page   = parseInt(searchParams.get("page")  || "1", 10);
+    const limit  = parseInt(searchParams.get("limit") || "10", 10);
+    const search = searchParams.get("search") || "";
 
-    return NextResponse.json(brands);
+    const skip = (page - 1) * limit;
+
+    const where: Prisma.BrandWhereInput = {
+      storeId: params.storeId,
+      ...(search
+        ? {
+            name: {
+              contains: search,
+              mode: Prisma.QueryMode.insensitive,
+            },
+          }
+        : {}),
+    };
+
+    const [brands, total] = await Promise.all([
+      db.brand.findMany({
+        where,
+        skip,
+        take: limit,
+        orderBy: { createdAt: "desc" },
+      }),
+      db.brand.count({ where }),
+    ]);
+
+    return NextResponse.json({
+      rows: brands,
+      rowCount: total,
+      page,
+      limit,
+    });
   } catch (error) {
-    console.log("[BRANDS_GET]", error);
+    console.error("[BRANDS_GET]", error);
     return new NextResponse("Internal server error", { status: 500 });
   }
 }

@@ -12,18 +12,39 @@ import { ApiList } from "./api-list.";
 
 interface BrandClientProps {
   data: BrandColumn[];
+  initialRowCount: number;
 }
 
-export const BrandClient = ({ data }: BrandClientProps) => {
+export const BrandClient = ({ data, initialRowCount }: BrandClientProps) => {
   const router = useRouter();
   const params = useParams();
+
+  const fetchBrands = async ({
+    pageIndex,
+    pageSize,
+    filters,
+  }: {
+    pageIndex: number;
+    pageSize: number;
+    filters: { id: string; value: unknown }[];
+  }) => {
+    const searchValue = filters.find((f) => f.id === "name")?.value as string | undefined;
+
+    const url = `/api/admin/${process.env.NEXT_PUBLIC_STORE_ID}/brands?page=${pageIndex + 1}&limit=${pageSize}${
+      searchValue ? `&search=${encodeURIComponent(searchValue)}` : ""
+    }`;
+
+    const res = await fetch(url);
+    if (!res.ok) throw new Error("Failed to fetch brands");
+    return res.json(); 
+  };
 
   return (
     <>
       <div className="flex items-center justify-between">
         <Header
           title="Brands"
-          badge={data.length.toString()}
+          badge={initialRowCount.toString()}
           description="Brands for your store"
         />
         <Button onClick={() => router.push(`/admin/brands/create`)}>
@@ -32,7 +53,14 @@ export const BrandClient = ({ data }: BrandClientProps) => {
         </Button>
       </div>
       <Separator />
-      <DataTable columns={brandColumns} data={data} searchKey="name" />
+      <DataTable
+        columns={brandColumns}
+        data={data}
+        searchKey="name"
+        serverSide
+        fetchData={fetchBrands}
+        initialRowCount={initialRowCount}
+      />
       <Header title="API" description="API calls for brands" />
       <ApiList entityName="brands" entityIdName="brandId" />
     </>

@@ -1210,7 +1210,7 @@ export const ProductDetails = (props: ProductDetailsProps) => {
 
           {productData.product.warranty &&
             productData.product.warranty.trim() !== "" && (
-              <div className="flex items-center mt-4 border rounded-lg p-2 py-1 bg-[#f6f4f4]">
+              <div className="flex items-center mt-4 border rounded-lg p-2 py-1 bg-[#f6f4f4] gap-3">
                 <Image src={product.brand.cardImage} alt="logo" width={50} height={50} />
                 <div className="w-full">
                 <p className="text-base text-center">

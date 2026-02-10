@@ -1,5 +1,7 @@
 "use client";
 
+import Image from "next/image";
+
 export const ProductBadges = () => {
   const badges = [
     {
@@ -26,9 +28,11 @@ export const ProductBadges = () => {
         <div className="flex flex-wrap md:flex-nowrap md:flex-row justify-center items-center gap-6 md:gap-8">
           {badges.map((badge, index) => (
             <div key={index} className="flex flex-col items-center">
-              <img
+              <Image
                 src={badge.src}
                 alt={badge.alt}
+                width={160}
+                height={160}
                 className="w-32 h-32 md:w-40 md:h-40 object-contain"
               />
             </div>

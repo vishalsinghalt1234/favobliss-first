@@ -9,12 +9,22 @@ export const metadata: Metadata = {
 };
 
 const BrandsPage = async ({ params }: { params: { storeId: string } }) => {
+  const pageSize = 10;
+
   const brands = await db.brand.findMany({
     where: {
       storeId: params.storeId,
     },
+    take: pageSize,
+    skip: 0,
     orderBy: {
       createdAt: "desc",
+    },
+  });
+
+  const total = await db.brand.count({
+    where: {
+      storeId: params.storeId,
     },
   });
 
@@ -28,7 +38,7 @@ const BrandsPage = async ({ params }: { params: { storeId: string } }) => {
   return (
     <div className="flex flex-col">
       <div className="flex-1 space-y-4 p-8 pt-6">
-        <BrandClient data={formattedBrands} />
+        <BrandClient data={formattedBrands} initialRowCount={total} />
       </div>
     </div>
   );

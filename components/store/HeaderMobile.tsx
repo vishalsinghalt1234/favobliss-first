@@ -17,7 +17,7 @@ import { Account } from "@/components/account";
 import { useCart } from "@/hooks/use-cart";
 import { useRouter } from "next/navigation";
 import { useDebounce } from "@/hooks/use-debounce";
-import Image from '@/components/image';
+import Image from "@/components/image";
 import { useDebouncedCallback } from "@/hooks/use-debouncecallback";
 
 const searchCategories = [
@@ -377,12 +377,14 @@ export default function HeaderMobile({
                             >
                               <div className="w-12 h-12 mb-2 rounded-lg bg-gray-100 flex items-center justify-center overflow-hidden">
                                 {subCategory.icon ? (
-                                  <img
-                                    src={subCategory.icon}
-                                    alt={subCategory.name}
-                                    className="w-full h-full object-cover"
-                                    loading="lazy"
-                                  />
+                                  <div className="relative w-full h-full">
+                                    <Image
+                                      src={subCategory.icon}
+                                      alt={subCategory.name}
+                                      fill
+                                      className="object-cover"
+                                    />
+                                  </div>
                                 ) : (
                                   <div className="w-8 h-8 bg-gradient-to-br from-orange-400 to-orange-600 rounded-md flex items-center justify-center">
                                     <span className="text-white text-xs font-bold">
@@ -525,8 +527,8 @@ export default function HeaderMobile({
                   {isSearching ? (
                     <div className="px-3 py-2 text-sm text-gray-700 relative h-[150px]">
                       <div className="absolute inset-0 flex items-center justify-center bg-white/80 z-50">
-                            <div className="h-8 w-8 animate-spin rounded-full border-4 border-gray-300 border-t-black" />
-                          </div>
+                        <div className="h-8 w-8 animate-spin rounded-full border-4 border-gray-300 border-t-black" />
+                      </div>
                     </div>
                   ) : (
                     <div className="py-2">
@@ -545,10 +547,12 @@ export default function HeaderMobile({
                               <div className="flex items-center gap-2">
                                 {product.variants[0]?.images[0] ? (
                                   <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                                    <img
+                                    <Image
                                       src={product.variants[0].images[0].url}
                                       alt={product.variants[0].name}
-                                      className="w-8 h-8 object-contain rounded"
+                                      width={32}
+                                      height={32}
+                                      className="object-contain rounded"
                                     />
                                   </div>
                                 ) : (

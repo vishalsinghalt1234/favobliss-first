@@ -1,7 +1,6 @@
 import { Metadata } from "next";
 import { format } from "date-fns";
 import { db } from "@/lib/db";
-
 import { ProductColumn } from "@/components/admin/store/utils/columns";
 import { ProductClient } from "@/components/admin/store/utils/product-client";
 
@@ -18,56 +17,42 @@ export const metadata: Metadata = {
 };
 
 const ProductsPage = async ({ params }: { params: { storeId: string } }) => {
-  const products = await db.product.findMany({
-    where: {
-      storeId: params.storeId,
-    },
-    include: {
-      category: true,
-      subCategory: {
-        include: {
-          parent: true,
-        },
-      },
-      variants: {
-        orderBy: {
-          createdAt: "asc",
-        },
-        include: {
-          size: true,
-          color: true,
-          images: true,
-          variantPrices: {
-            include: {
-              locationGroup: true,
-            },
-          },
-          variantSpecifications: {
-            include: {
-              specificationField: {
-                include: {
-                  group: true,
-                },
-              },
-            },
-          },
-        },
-      },
-    },
-    orderBy: {
-      createdAt: "desc",
-    },
-  });
+  const pageSize = 10;
 
-  const subCategories = await db.subCategory.findMany({
-    where: {
-      storeId: params.storeId,
-    },
-    include: {
-      parent: true,
-    },
-  });
-  
+  const [products, subCategories, total] = await Promise.all([
+    db.product.findMany({
+      where: {
+        storeId: params.storeId,
+      },
+      include: {
+        category: true,
+        subCategory: {
+          include: {
+            parent: true,
+          },
+        },
+        variants: {
+          orderBy: { createdAt: "asc" },
+          take: 1, // only need first variant for table
+          include: {
+            size: true,
+            color: true,
+            variantPrices: {
+              take: 1, // only first price
+            },
+          },
+        },
+      },
+      take: pageSize,
+      skip: 0,
+      orderBy: { createdAt: "desc" },
+    }),
+    db.subCategory.findMany({
+      where: { storeId: params.storeId },
+      include: { parent: true },
+    }),
+    db.product.count({ where: { storeId: params.storeId } }),
+  ]);
 
   const formattedProducts: ProductColumn[] = products.map((product) => {
     const firstVariant = product.variants[0];
@@ -96,7 +81,7 @@ const ProductsPage = async ({ params }: { params: { storeId: string } }) => {
   return (
     <div className="flex flex-col">
       <div className="flex-1 space-y-4 p-8 pt-6">
-        <ProductClient data={formattedProducts} />
+        <ProductClient data={formattedProducts} initialRowCount={total} />
       </div>
     </div>
   );

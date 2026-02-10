@@ -1,7 +1,7 @@
 "use client";
 
-import { Product, LocationGroup, Variant } from "@/types"; // Assuming Variant is imported or defined as type Variant = Product['variants'][number];
-import Image from '@/components/image';
+import { Product, LocationGroup, Variant } from "@/types";
+import Image from "@/components/image";
 import { formatter } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { MouseEventHandler, useState, useEffect } from "react";
@@ -54,13 +54,13 @@ export const ProductCard = ({
     const inputPincode = locationData?.pincode;
     const locationGroup = inputPincode
       ? locationGroups?.find((lg) =>
-          lg.locations.some((loc) => loc.pincode === inputPincode)
+          lg.locations.some((loc) => loc.pincode === inputPincode),
         )
       : null;
 
     if (locationGroup && theVariant?.variantPrices) {
       const variantPrice = theVariant.variantPrices.find(
-        (vp) => vp.locationGroupId === locationGroup.id
+        (vp) => vp.locationGroupId === locationGroup.id,
       );
       if (variantPrice && variantPrice.price > 0) {
         setSelectedLocationGroupId(locationGroup.id);
@@ -74,11 +74,11 @@ export const ProductCard = ({
 
     // Fallback to default location group or variant price
     const defaultLocationGroup = locationGroups?.find(
-      (lg) => lg.id === defaultLocationGroupId
+      (lg) => lg.id === defaultLocationGroupId,
     );
     const defaultVariantPrice = defaultLocationGroup
       ? theVariant?.variantPrices?.find(
-          (vp) => vp.locationGroupId === defaultLocationGroup.id
+          (vp) => vp.locationGroupId === defaultLocationGroup.id,
         )
       : null;
 
@@ -91,10 +91,10 @@ export const ProductCard = ({
     } else {
       // If even default is 0 or not found, fall back to any available price > 0
       const anyVariantPrice = theVariant.variantPrices.find(
-        (vp) => vp.price > 0
+        (vp) => vp.price > 0,
       );
       setSelectedLocationGroupId(
-        anyVariantPrice ? anyVariantPrice.locationGroupId : null
+        anyVariantPrice ? anyVariantPrice.locationGroupId : null,
       );
       setLocationPrice({
         price: anyVariantPrice?.price || 0,
@@ -144,7 +144,8 @@ export const ProductCard = ({
   ) {
   }
 
-  const sortedImages = theVariant?.images?.sort((a, b) => a.id.localeCompare(b.id)) || [];
+  const sortedImages =
+    theVariant?.images?.sort((a, b) => a.id.localeCompare(b.id)) || [];
 
   const imageUrl = sortedImages[0]?.url || "/placeholder-image.jpg";
   const discount = calculateDiscount(locationPrice.price, locationPrice.mrp);
@@ -188,20 +189,13 @@ export const ProductCard = ({
                 {formatPrice(locationPrice.price)}
               </span>
               <div className="flex items-center space-x-2 flex-wrap">
-                
-                  <div
-                    className="text-[10px] md:text-[12px]  text-gray-500 whitespace-nowrap"
-                    
-                  >
-                    MRP{" "}
-                    <span className="line-through">
-                      {formatPrice(locationPrice.mrp)}
-                    </span>
-                  </div>
-                <div
-                  className="bg-orange-400 text-white text-[10px] md:text-[12px] px-2 py-1 rounded-full font-medium whitespace-nowrap"
-                  
-                >
+                <div className="text-[10px] md:text-[12px]  text-gray-500 whitespace-nowrap">
+                  MRP{" "}
+                  <span className="line-through">
+                    {formatPrice(locationPrice.mrp)}
+                  </span>
+                </div>
+                <div className="bg-orange-400 text-white text-[10px] md:text-[12px] px-2 py-1 rounded-full font-medium whitespace-nowrap">
                   {discount}% off
                 </div>
               </div>

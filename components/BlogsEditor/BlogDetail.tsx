@@ -32,6 +32,7 @@ import CodeBlockLowlight from "@tiptap/extension-code-block-lowlight";
 import Typography from "@tiptap/extension-typography";
 import { all, createLowlight } from "lowlight";
 import sanitizeHtml from "sanitize-html";
+import Image from "next/image";
 
 const lowlight = createLowlight(all);
 
@@ -89,10 +90,12 @@ export function BlogDetail({ blog }: BlogDetailProps) {
       {blog.banner && (
         <div className="md:px-7 px-5">
           <div className="w-full h-[400px] md:h-[500px] relative overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl">
-            <img
+            <Image
               src={blog.banner}
               alt={blog.title}
+              fill
               className="w-full h-full object-cover rounded-xl"
+              loading="lazy"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
           </div>

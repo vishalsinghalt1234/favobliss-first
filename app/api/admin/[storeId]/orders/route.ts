@@ -6,6 +6,9 @@ import { generateOrderNumber, generateInvoiceNumber } from "@/lib/utils";
 import Razorpay from "razorpay";
 import { CartSelectedItem } from "@/types";
 import { Address } from "@prisma/client";
+import { Prisma } from "@prisma/client";
+import { format } from "date-fns";
+import { formatter } from "@/lib/utils";
 
 export async function POST(request: Request) {
   try {
@@ -187,27 +190,107 @@ export async function POST(request: Request) {
   }
 }
 
-export async function GET(_request: Request) {
+export async function GET(
+  request: Request,
+  { params }: { params: { storeId: string } }
+) {
   try {
-    const session = await auth();
-    if (!session || !session.user || !session.user.id) {
-      return NextResponse.json([]);
+    if (!params.storeId) {
+      return new NextResponse("Store ID is required", { status: 400 });
     }
 
-    const orders = await db.order.findMany({
-      where: { userId: session.user.id },
-      include: {
-        orderProducts: {
-          include: { comment: true, variant: true },
-        },
-        shippingAddress: true,
-      },
-      orderBy: { createdAt: "desc" },
-    });
+    const { searchParams } = new URL(request.url);
+    const page = parseInt(searchParams.get("page") || "1", 10);
+    const limit = parseInt(searchParams.get("limit") || "10", 10);
+    const search = searchParams.get("search") || "";
 
-    return NextResponse.json(orders);
+    const skip = (page - 1) * limit;
+
+    const where: Prisma.OrderWhereInput = {
+      storeId: params.storeId,
+      ...(search
+        ? {
+            orderNumber: {
+              contains: search,
+              mode: Prisma.QueryMode.insensitive,
+            },
+          }
+        : {}),
+    };
+
+    const [orders, total] = await Promise.all([
+      db.order.findMany({
+        where,
+        include: {
+          orderProducts: {
+            include: {
+              variant: {
+                include: {
+                  product: true,
+                  size: true,
+                  color: true,
+                  variantPrices: true,
+                },
+              },
+            },
+          },
+        },
+        skip,
+        take: limit,
+        orderBy: { createdAt: "desc" },
+      }),
+      db.order.count({ where }),
+    ]);
+
+    // Same formatting logic as server page
+    const formattedOrders = orders
+      .map((item) => {
+        const valid = item.orderProducts.filter(
+          (op) => op.variantId && op.variant
+        );
+        if (valid.length === 0) return null;
+
+        return {
+          id: item.id,
+          phone: item.phone,
+          address: item.address,
+          isPaid: item.isPaid,
+          status: item.status,
+          orderNumber: item.orderNumber || "Pending",
+          customerName: item.customerName || "-",
+          customerEmail: item.customerEmail || "-",
+          products: valid
+            .map((op) => {
+              const v = op.variant;
+              return [
+                v.name,
+                v.size?.value ? `(${v.size.value}` : "",
+                v.color?.name ? `${v.color.name})` : "",
+              ]
+                .filter(Boolean)
+                .join(" ");
+            })
+            .join(", "),
+          totalPrice: formatter.format(
+            valid.reduce((sum, op) => {
+              const price = op.variant.variantPrices[0]?.price || 0;
+              return sum + price * op.quantity;
+            }, 0)
+          ),
+          gstnumber: item.gstNumber || "Not provided",
+          createdAt: format(item.createdAt, "MMMM do, yyyy"),
+        };
+      })
+      .filter((o): o is any => o !== null);
+
+    return NextResponse.json({
+      rows: formattedOrders,
+      rowCount: total,
+      page,
+      limit,
+    });
   } catch (error) {
-    console.error("ORDERS GET API", error);
+    console.error("[ADMIN_ORDERS_GET]", error);
     return new NextResponse("Internal server error", { status: 500 });
   }
 }

@@ -119,10 +119,6 @@ function getCloudinaryUrl(
   }
 }
 
-/**
- * Get responsive image srcset for BunnyCDN
- * Useful for <img> tags with srcset attribute
- */
 export function getBunnySrcSet(
   url: string,
   widths: number[] = [640, 750, 828, 1080, 1200, 1920],

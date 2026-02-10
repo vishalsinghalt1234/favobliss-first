@@ -2,6 +2,7 @@ import { auth } from "@/auth";
 import { db } from "@/lib/db";
 import { NextResponse } from "next/server";
 import { z } from "zod";
+import { Prisma } from "@prisma/client";
 
 const SpecificationFieldSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -63,7 +64,6 @@ export async function POST(
   }
 }
 
-// GET: List all specification fields
 export async function GET(
   request: Request,
   { params }: { params: { storeId: string } }
@@ -73,21 +73,53 @@ export async function GET(
       return new NextResponse("Store Id is required", { status: 400 });
     }
 
-    const specificationFields = await db.specificationField.findMany({
-      where: {
-        storeId: params.storeId,
-      },
-      include: {
-        group: true,
-      },
-      orderBy: {
-        createdAt: "desc",
-      },
-    });
+    const { searchParams } = new URL(request.url);
+    const page   = parseInt(searchParams.get("page")  || "1", 10);
+    const limit  = parseInt(searchParams.get("limit") || "10", 10);
+    const search = searchParams.get("search") || "";
 
-    return NextResponse.json(specificationFields);
+    const skip = (page - 1) * limit;
+
+    const where: Prisma.SpecificationFieldWhereInput = {
+      storeId: params.storeId,
+      ...(search
+        ? {
+            name: {
+              contains: search,
+              mode: Prisma.QueryMode.insensitive,
+            },
+          }
+        : {}),
+    };
+
+    const [specificationFields, total] = await Promise.all([
+      db.specificationField.findMany({
+        where,
+        include: {
+          group: true,
+        },
+        skip,
+        take: limit,
+        orderBy: { createdAt: "desc" },
+      }),
+      db.specificationField.count({ where }),
+    ]);
+
+    const formatted = specificationFields.map((item) => ({
+      id: item.id,
+      name: item.name,
+      group: item.group.name,
+      createdAt: item.createdAt.toISOString(),
+    }));
+
+    return NextResponse.json({
+      rows: formatted,
+      rowCount: total,
+      page,
+      limit,
+    });
   } catch (error) {
-    console.log("[SPECIFICATION_FIELDS_GET]", error);
+    console.error("[SPECIFICATION_FIELDS_GET]", error);
     return new NextResponse("Internal server error", { status: 500 });
   }
 }

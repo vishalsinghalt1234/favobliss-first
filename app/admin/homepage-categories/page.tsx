@@ -13,6 +13,8 @@ const HomepageCategoriesPage = async ({
 }: {
   params: { storeId: string };
 }) => {
+  const pageSize = 10;
+
   const homepageCategories = await db.homepageCategory.findMany({
     where: {
       storeId: params.storeId,
@@ -30,8 +32,16 @@ const HomepageCategoriesPage = async ({
         },
       },
     },
+    take: pageSize,
+    skip: 0,
     orderBy: {
       createdAt: "desc",
+    },
+  });
+
+  const total = await db.homepageCategory.count({
+    where: {
+      storeId: params.storeId,
     },
   });
 
@@ -51,7 +61,10 @@ const HomepageCategoriesPage = async ({
   return (
     <div className="flex flex-col">
       <div className="flex-1 space-y-4 p-8 pt-6">
-        <HomepageCategoryClient data={formattedHomepageCategories} />
+        <HomepageCategoryClient
+          data={formattedHomepageCategories}
+          initialRowCount={total}
+        />
       </div>
     </div>
   );

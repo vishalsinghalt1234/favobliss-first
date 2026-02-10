@@ -199,6 +199,7 @@ export interface VariantImage {
   id: string;
   url: string;
   mediaType: "IMAGE" | "VIDEO";
+  createdAt: Date;
 }
 
 export interface Color {

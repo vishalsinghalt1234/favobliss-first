@@ -28,10 +28,12 @@ interface SpecificationFieldColumn {
 
 interface SpecificationFieldClientProps {
   data: SpecificationFieldColumn[];
+  initialRowCount: number;
 }
 
 export const SpecificationFieldClient = ({
   data,
+  initialRowCount,
 }: SpecificationFieldClientProps) => {
   const router = useRouter();
   const params = useParams();
@@ -96,6 +98,28 @@ export const SpecificationFieldClient = ({
     } as DisplayColumnDef<SpecificationFieldColumn>,
   ];
 
+  const fetchSpecificationFields = async ({
+    pageIndex,
+    pageSize,
+    filters,
+  }: {
+    pageIndex: number;
+    pageSize: number;
+    filters: { id: string; value: unknown }[];
+  }) => {
+    const searchValue = filters.find((f) => f.id === "name")?.value as string | undefined;
+
+    const url = `/api/admin/${process.env.NEXT_PUBLIC_STORE_ID}/specification-fields?page=${
+      pageIndex + 1
+    }&limit=${pageSize}${
+      searchValue ? `&search=${encodeURIComponent(searchValue)}` : ""
+    }`;
+
+    const res = await fetch(url);
+    if (!res.ok) throw new Error("Failed to fetch specification fields");
+    return res.json(); // { rows, rowCount }
+  };
+
   const onDelete = async () => {
     if (!selectedId) return;
     try {
@@ -129,7 +153,7 @@ export const SpecificationFieldClient = ({
       <div className="flex items-center justify-between">
         <Header
           title="Specification Fields"
-          badge={data.length.toString()}
+          badge={initialRowCount.toString()}
           description="Manage specification fields for your store"
         />
         <Button
@@ -140,7 +164,15 @@ export const SpecificationFieldClient = ({
         </Button>
       </div>
       <Separator />
-      <DataTable columns={columns} data={data} visibility searchKey="name" />
+      <DataTable
+        columns={columns}
+        data={data}
+        visibility
+        searchKey="name"
+        serverSide
+        fetchData={fetchSpecificationFields}
+        initialRowCount={initialRowCount}
+      />
       <Header title="API" description="API calls for specification fields" />
       <ApiList entityName="specification-fields" entityIdName="fieldId" />
     </>

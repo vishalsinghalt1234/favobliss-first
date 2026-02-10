@@ -2,6 +2,8 @@ import { auth } from "@/auth";
 import { db } from "@/lib/db";
 import { SubCategorySchema } from "@/schemas/admin/subcategory-form-schema";
 import { NextResponse } from "next/server";
+import { Prisma } from "@prisma/client";
+import { format } from "date-fns";
 
 const allowedOrigins = [
   process.env.NEXT_PUBLIC_FRONTEND_URL,
@@ -112,6 +114,7 @@ export async function POST(
   }
 }
 
+
 export async function GET(
   request: Request,
   { params }: { params: { storeId: string } }
@@ -122,7 +125,7 @@ export async function GET(
     : allowedOrigins[0];
 
   const headers = {
-    "Access-Control-Allow-Origin": corsOrigin || "",
+    "Access-Control-Allow-Origin": corsOrigin || "*",
     "Access-Control-Allow-Methods": "GET, OPTIONS",
     "Access-Control-Allow-Headers": "Content-Type",
     "Access-Control-Max-Age": "86400",
@@ -143,8 +146,7 @@ export async function GET(
     if (slug) {
       const subCategory = await db.subCategory.findUnique({
         where: {
-          slug,
-          storeId: params.storeId,
+          slug, 
         },
         include: {
           category: true,
@@ -171,41 +173,55 @@ export async function GET(
       return NextResponse.json(subCategory, { headers });
     }
 
-    const subCategories = await db.subCategory.findMany({
-      where: {
-        storeId: params.storeId,
-      },
-      include: {
-        category: true,
-        parent: true,
-        childSubCategories: {
-          include: {
-            childSubCategories: {
-              include: {
-                childSubCategories: true,
-              },
+    // ── Paginated list for admin table ───────────────────────────────
+    const page   = parseInt(searchParams.get("page")  || "1", 10);
+    const limit  = parseInt(searchParams.get("limit") || "10", 10);
+    const search = searchParams.get("search") || "";
+
+    const skip = (page - 1) * limit;
+
+    const where: Prisma.SubCategoryWhereInput = {
+      storeId: params.storeId,
+      ...(search
+        ? {
+            name: {
+              contains: search,
+              mode: Prisma.QueryMode.insensitive,
             },
-          },
+          }
+        : {}),
+    };
+
+    const [subCategories, total] = await Promise.all([
+      db.subCategory.findMany({
+        where,
+        include: {
+          category: true,
+          parent: true,
         },
-      },
-    });
+        skip,
+        take: limit,
+        orderBy: { createdAt: "desc" },
+      }),
+      db.subCategory.count({ where }),
+    ]);
 
-    const transformedSubCategories = subCategories
-      .filter((sub) => sub.parentId === null)
-      .map((sub) => ({
-        ...sub,
-        childSubCategories: sub.childSubCategories.map((child) => ({
-          ...child,
-          childSubCategories: child.childSubCategories.map((grandchild) => ({
-            ...grandchild,
-            childSubCategories: grandchild.childSubCategories || [],
-          })),
-        })),
-      }));
+    const formatted = subCategories.map((item) => ({
+      id: item.id,
+      name: item.name,
+      categoryName: item.category.name,
+      parentName: item.parent?.name || "None",
+      createdAt: format(item.createdAt, "MMMM do, yyyy"),
+    }));
 
-    return NextResponse.json(transformedSubCategories, { headers });
+    return NextResponse.json({
+      rows: formatted,
+      rowCount: total,
+      page,
+      limit,
+    }, { headers });
   } catch (error) {
-    console.log("[SUBCATEGORIES_GET]", error);
+    console.error("[SUBCATEGORIES_GET]", error);
     return new NextResponse("Internal server error", { status: 500, headers });
   }
 }

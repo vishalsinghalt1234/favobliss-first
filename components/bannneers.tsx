@@ -1,5 +1,12 @@
 import React from "react";
-import { ChevronRight, MapPin, ShoppingCart, User, Menu } from "lucide-react";
+import {
+  ChevronRight,
+  MapPin,
+  ShoppingCart,
+  User,
+  Menu,
+} from "lucide-react";
+import Image from "next/image";
 
 const Banneers = () => {
   return (
@@ -39,10 +46,12 @@ const Banneers = () => {
             Starting at <span className="text-black font-bold">₹28,999</span>
           </p>
         </div>
-        <img
+        <Image
           src="https://images.samsung.com/is/image/samsung/p6pim/in/qa55q60bakxxl/gallery/in-qled-q60b-qa55q60bakxxl-533513017?$1300_1038_PNG$"
           alt="QLED TV"
-          className="w-[400px] mt-10 md:mt-0"
+          width={400}
+          height={320}
+          className="mt-10 md:mt-0"
         />
       </div>
     </div>
