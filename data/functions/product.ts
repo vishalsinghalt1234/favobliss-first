@@ -86,16 +86,15 @@ const productBaseInclude: Prisma.ProductInclude = {
 
 const productListInclude: Prisma.ProductInclude = {
   variants: {
-    orderBy: { createdAt: "asc" },
-    take: 1, // Only first variant needed for card
+    orderBy: { createdAt: Prisma.SortOrder.asc },
+    
     select: {
       name: true,
       slug: true,
       stock: true,
       images: {
-        orderBy: { createdAt: "asc" },
-        take: 1,
-        select: { url: true },
+        orderBy: { createdAt: Prisma.SortOrder.asc },
+        select: { id: true, url: true, createdAt: true },
       },
       variantPrices: {
         select: {
@@ -282,13 +281,11 @@ export async function productsList(
           variantPrices: firstVariant.variantPrices || [],
         }
       : null;
-
     return {
       ...product,
-      variants: cardVariant ? [cardVariant] : [],
+     variants: cardVariant ? [cardVariant] : [],
       averageRating,
       numberOfRatings,
-      reviews: undefined, // Clean up — not needed anymore
     };
   });
 

@@ -51,7 +51,6 @@ const LandingPage = async ({ params }: { params: { storeId: string } }) => {
     homepageCategoriesResult,
     hotProductsResult,
   ] = results;
-
   const allProducts =
     allProductsResult.status === "fulfilled"
       ? allProductsResult.value.products

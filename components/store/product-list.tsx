@@ -31,20 +31,20 @@ export const ProductList = ({
   const isAuthenticated = status === "authenticated";
   const userName = isAuthenticated ? session?.user?.name || "User" : "User";
 
-  const sortedProducts = data.slice(0, 5).map((product) => ({
+  const sortedProducts = data?.slice(0, 5).map((product) => ({
     ...product,
     variants: product.variants.map((variant) => ({
       ...variant,
-      images: [...variant.images].sort((a, b) => new Date(a?.createdAt).getTime() - new Date(b?.createdAt).getTime()),
+      images: variant.images,
     })),
   }));
 
-  const filteredProducts = sortedProducts.filter((product) =>
+  const filteredProducts = sortedProducts?.filter((product) =>
   product.variants?.some((variant: any) =>
     variant.variantPrices?.some((vp: any) => vp.price > 0)
   )
 );
-
+// console.log(`Filtered products for ${title}:${filteredProducts.length}`, filteredProducts);
 
   return (
     <div className="space-y-2 md:space-y-8">
@@ -65,14 +65,14 @@ export const ProductList = ({
         </div>
       )}
 
-      {data.length === 0 && <NoResults />}
+      {data?.length === 0 && <NoResults />}
       <div
         className={`flex flex-row overflow-x-auto gap-2 md:gap-4 mb-2 snap-x snap-mandatory py-3 scrollbar-hide ${
           isSpaceTop ? "mt-0!" : ""
         }`}
         style={isSpaceTop ? { marginTop: "0px" } : {}}
       >
-        {filteredProducts.map((product) => (
+        {filteredProducts?.map((product) => (
           <div
             key={product.id}
             className={`flex-none w-[40vw] sm:w-[28vw] md:w-[25vw] lg:w-[25vw] ${className} ${

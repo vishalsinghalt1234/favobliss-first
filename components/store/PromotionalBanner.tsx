@@ -47,7 +47,7 @@ const PromotionalBanner = (props: Props) => {
     <>
       <div className="relative rounded-3xl overflow-hidden bg-[#f8cabb] py-3 px-1 sm:p-4 lg:p-5">
         {/* TOP IMAGE SECTION */}
-        <div className="relative w-full h-[180px] sm:h-[220px] md:h-[260px] rounded-2xl overflow-hidden mb-4">
+        <div className="relative w-full h-[180px] sm:h-[220px] md:h-[490px] rounded-2xl overflow-hidden mb-4">
           <div
             className="absolute inset-0 bg-cover bg-center"
             style={{

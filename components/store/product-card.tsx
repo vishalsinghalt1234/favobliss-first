@@ -138,16 +138,19 @@ export const ProductCard = ({
       />
     ));
   };
-  if (
-    theVariant.name ==
-    "Xiaomi Smart Air Purifier 4 Lite | True HEPA Filter Removes 99.97% Particles | Smart App & Voice Control (Alexa & Google) | 360° Filtration | High CADR for Large Rooms | Low Noise & Energy Efficient | 1-Year Warranty"
-  ) {
-  }
 
-  const sortedImages =
-    theVariant?.images?.sort((a, b) => a.id.localeCompare(b.id)) || [];
 
-  const imageUrl = sortedImages[0]?.url || "/placeholder-image.jpg";
+// Keep theVariant as you already have
+const images = theVariant?.images || [];
+
+// IMPORTANT: don't mutate with .sort() directly; sort a copy
+const sortedImages = [...images].sort((a: any, b: any) => {
+  const ta = a?.createdAt ? new Date(a.createdAt).getTime() : 0;
+  const tb = b?.createdAt ? new Date(b.createdAt).getTime() : 0;
+  return ta - tb;
+});
+
+const imageUrl = sortedImages?.[0]?.url || "/placeholder-image.jpg";
   const discount = calculateDiscount(locationPrice.price, locationPrice.mrp);
 
   return (

@@ -18,6 +18,7 @@ const RecentlyViewed: React.FC<RecentlyViewedProps> = ({ locationGroups }) => {
   useEffect(() => {
     const fetchRecentlyViewed = async () => {
       const productIds = getRecentlyViewed();
+      console.log(`[RECENTLY_VIEWED] Product IDs:`, productIds);
       if (productIds.length > 0) {
         try {
           const products = await getRecentlyViewedProducts(productIds);
