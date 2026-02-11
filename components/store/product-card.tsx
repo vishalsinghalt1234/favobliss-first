@@ -147,7 +147,8 @@ const images = theVariant?.images || [];
 const sortedImages = [...images].sort((a: any, b: any) => {
   const ta = a?.createdAt ? new Date(a.createdAt).getTime() : 0;
   const tb = b?.createdAt ? new Date(b.createdAt).getTime() : 0;
-  return ta - tb;
+  if (ta !== tb) return ta - tb;
+  return (a.id || '').localeCompare(b.id || '');
 });
 
 const imageUrl = sortedImages?.[0]?.url || "/placeholder-image.jpg";
