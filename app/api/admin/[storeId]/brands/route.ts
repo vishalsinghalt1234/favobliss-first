@@ -2,6 +2,9 @@ import { auth } from "@/auth";
 import { db } from "@/lib/db";
 import { NextResponse } from "next/server";
 import { Prisma } from "@prisma/client";
+import { revalidatePath, revalidateTag } from "next/cache";
+const BRAND_TAG = "brands";
+
 
 export async function POST(
   request: Request,
@@ -60,6 +63,10 @@ export async function POST(
         storeId: params.storeId,
       },
     });
+revalidateTag(BRAND_TAG);
+
+
+if (brand?.slug) revalidatePath(`/brand/${brand.slug}`);
 
     return NextResponse.json(brand);
   } catch (error) {

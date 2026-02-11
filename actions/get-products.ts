@@ -40,14 +40,6 @@ interface HotDealsQuery extends ProductQuery {
   timeFrame?: "7 days" | "30 days" | "90 days" | "all time";
 }
 
-const productQueryKey = (query: ProductQuery) =>
-  `products-${JSON.stringify(query)}`;
-const hotDealsKey = (query: HotDealsQuery) =>
-  `hot-deals-${JSON.stringify(query)}`;
-const productSlugKey = (slug: string) => `product-slug-${slug}`;
-const productIdKey = (id: string) => `product-id-${id}`;
-const recentlyViewedKey = (productIds: string[], locationGroupId?: string) =>
-  `recently-viewed-${productIds.sort().join("-")}-${locationGroupId || "none"}`;
 
 /* ---------- GET PRODUCTS LIST ---------- */
 const _getProducts = unstable_cache(

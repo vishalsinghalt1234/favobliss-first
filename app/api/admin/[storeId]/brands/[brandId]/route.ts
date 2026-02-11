@@ -1,10 +1,15 @@
 import { auth } from "@/auth";
 import { db } from "@/lib/db";
 import { NextResponse } from "next/server";
+import { revalidatePath, revalidateTag } from "next/cache";
+
+const BRAND_TAG = "brands";
+const PRODUCT_TAG = "products";
+const CATEGORY_TAG = "categories";
 
 export async function PATCH(
   request: Request,
-  { params }: { params: { storeId: string; brandId: string } }
+  { params }: { params: { storeId: string; brandId: string } },
 ) {
   try {
     const session = await auth();
@@ -54,6 +59,12 @@ export async function PATCH(
       return new NextResponse("Brand slug already exists", { status: 400 });
     }
 
+    const brandBeforeUpdate = await db.brand.findUnique({
+      where: { id: params.brandId },
+      select: { slug: true },
+    });
+    const oldSlug = brandBeforeUpdate?.slug;
+
     const brand = await db.brand.update({
       where: {
         id: params.brandId,
@@ -66,6 +77,14 @@ export async function PATCH(
         cardImage,
       },
     });
+    // ✅ purge cached brand + product listing caches (products include brand info in includes)
+    revalidateTag(BRAND_TAG);
+    revalidateTag(PRODUCT_TAG);
+    revalidateTag(CATEGORY_TAG);
+
+    // ✅ revalidate brand page paths (old + new)
+    if (oldSlug) revalidatePath(`/brand/${oldSlug}`);
+    if (brand?.slug) revalidatePath(`/brand/${brand.slug}`);
 
     return NextResponse.json(brand);
   } catch (error) {
@@ -76,7 +95,7 @@ export async function PATCH(
 
 export async function DELETE(
   _request: Request,
-  { params }: { params: { storeId: string; brandId: string } }
+  { params }: { params: { storeId: string; brandId: string } },
 ) {
   try {
     const session = await auth();
@@ -114,15 +133,24 @@ export async function DELETE(
     if (productsUsingBrand) {
       return new NextResponse(
         "Cannot delete brand because it is used by one or more products",
-        { status: 400 }
+        { status: 400 },
       );
     }
+    const brandBeforeDelete = await db.brand.findUnique({
+      where: { id: params.brandId },
+      select: { slug: true },
+    });
 
     const brand = await db.brand.delete({
       where: {
         id: params.brandId,
       },
     });
+    revalidateTag(BRAND_TAG);
+ 
+
+    if (brandBeforeDelete?.slug)
+      revalidatePath(`/brand/${brandBeforeDelete.slug}`);
 
     return NextResponse.json(brand);
   } catch (error) {
@@ -133,7 +161,7 @@ export async function DELETE(
 
 export async function GET(
   _request: Request,
-  { params }: { params: { brandId: string } }
+  { params }: { params: { brandId: string } },
 ) {
   try {
     if (!params.brandId) {

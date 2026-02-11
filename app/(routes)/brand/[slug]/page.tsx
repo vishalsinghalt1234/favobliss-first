@@ -17,14 +17,14 @@ import { getLocationGroups } from "@/actions/get-location-group";
 import { getBrands } from "@/actions/get-brands";
 import ProductListClient from "@/components/store/PoductListClient";
 
-export const revalidate = 600;
+export const revalidate = 86400; // 24 hours in seconds
 
-export async function generateStaticParams() {
-  const brands = await getBrands(); 
-  return brands.map((brand) => ({
-    slug: brand.slug,
-  }));
-}
+// export async function generateStaticParams() {
+//   const brands = await getBrands(); 
+//   return brands.map((brand) => ({
+//     slug: brand.slug,
+//   }));
+// }
 
 async function withRetry<T>(
   fn: () => Promise<T>,
