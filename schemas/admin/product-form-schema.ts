@@ -19,7 +19,7 @@ export const VariantSchema = z
         z.object({
           url: z.string().url(),
           mediaType: z.enum(["IMAGE", "VIDEO"]).default("IMAGE"),
-        })
+        }),
       )
       .min(1, "At least one media item is required"),
     sku: z.string().optional(),
@@ -29,7 +29,7 @@ export const VariantSchema = z
       .string()
       .optional()
       .transform((val) => (val === null ? "" : val)),
-     gtin: z
+    gtin: z
       .string()
       .optional()
       .transform((val) => (val === null ? "" : val)),
@@ -39,7 +39,7 @@ export const VariantSchema = z
           locationGroupId: z.string().min(1, "Location group ID is required"),
           price: z.number().min(0, "Price must be non-negative"),
           mrp: z.number().min(0, "MRP must be non-negative"),
-        })
+        }),
       )
       .min(1, "At least one price per location is required"),
     name: z.string().min(1, "Variant name is required"),
@@ -47,8 +47,8 @@ export const VariantSchema = z
       .string()
       .min(1, "Slug is required")
       .regex(
-        /^[a-z0-9-]+$/,
-        "Slug must contain only lowercase letters, numbers, and hyphens"
+        /^[a-zA-Z0-9-]+$/,
+        "Slug must contain only letters (upper or lower case), numbers, and hyphens",
       ),
     about: z.string().optional(),
     description: z.string().min(1, "Description is required"),
@@ -69,7 +69,7 @@ export const VariantSchema = z
             .string()
             .min(1, "Specification field is required"),
           value: z.string().min(1, "Value is required"),
-        })
+        }),
       )
       .optional(),
   })
@@ -81,7 +81,7 @@ export const VariantSchema = z
       message:
         "Each variant must include a price for the location with pincode 110040",
       path: ["variantPrices"],
-    }
+    },
   );
 
 export const ProductSchema = z.object({
