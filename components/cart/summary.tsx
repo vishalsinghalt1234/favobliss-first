@@ -35,7 +35,7 @@ export const Summary = (props: Props) => {
   const { address } = useCheckoutAddress();
   const { items, removeAll, getTotalMrp } = useCart();
   const [paymentMethod, setPaymentMethod] = useState<"razorpay" | "cod">(
-    "razorpay"
+    "cod"
   );
   const [gstNumber, setGstNumber] = useState<string>("");
   const [hasGstNumber, setHasGstNumber] = useState(false);
@@ -402,12 +402,12 @@ export const Summary = (props: Props) => {
             }
             className="space-y-2"
           >
-            <div className="flex items-center space-x-2">
+            {/* <div className="flex items-center space-x-2">
               <RadioGroupItem value="razorpay" id="razorpay" />
               <Label htmlFor="razorpay" className="text-sm">
                 Pay Online
               </Label>
-            </div>
+            </div> */}
             {isCODAvailable && (
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="cod" id="cod" />
