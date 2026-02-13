@@ -40,7 +40,7 @@ export const AddressCard = ({ data, onSelect }: AddressCardProps) => {
         },
       });
       await axios.delete(url);
-      mutate();
+      await mutate();
       removeAddress();
       toast.success("Address removed successfully");
     } catch (error) {

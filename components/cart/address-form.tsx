@@ -120,6 +120,7 @@ export const AddressForm = ({ isModal, edit }: AddressFormProps) => {
       setLoading(true);
       if (!edit) {
         await axios.post("/api/v1/address", values);
+        await mutate();
         toast.success("Address Added Successfully");
       } else {
         const response = await axios.patch(`/api/v1/address/${address?.id}`, {

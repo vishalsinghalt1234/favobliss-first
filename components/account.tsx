@@ -16,7 +16,6 @@ import { FaRegUser } from "react-icons/fa";
 import { useState, useEffect } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
-
 export const Account = () => {
   const router = useRouter();
   const { data: session, status } = useSession();
@@ -91,7 +90,8 @@ export const Account = () => {
             <DropdownMenuSeparator />
             <DropdownMenuItem
               className="flex items-center text-zinc-700 font-semibold md:cursor-pointer"
-              onClick={() => signOut({ callbackUrl: "/" })}
+              onClick={() => { 
+                signOut({ callbackUrl: "/" });}}
             >
               <LogOut className="mr-3 h-4 w-4" />
               Logout
