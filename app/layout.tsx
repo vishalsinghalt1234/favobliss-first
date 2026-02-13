@@ -7,7 +7,7 @@ import { SessionProvider } from "next-auth/react";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
-// import { GoogleTagManager } from '@next/third-parties/google';
+import { GoogleTagManager } from '@next/third-parties/google';
 
 const roboto = Roboto({
   subsets: ["latin"],
@@ -32,7 +32,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <link rel="icon" href="/assets/favicon.ico" sizes="any" />
-      {/* <GoogleTagManager gtmId="GTM-KMK4QNXW" /> */}
+       <GoogleTagManager gtmId="GTM-P87DVZQV" /> 
       <body className={roboto.className}>
         <Analytics />
         <SpeedInsights />
