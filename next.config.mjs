@@ -22,53 +22,6 @@ const nextConfig = {
   },
   async headers() {
     return [
-      // ✅ IMPORTANT: Never cache user/private APIs (prevents cross-user data leak)
-      {
-        source: "/api/v1/:path*",
-        headers: [
-          {
-            key: "Cache-Control",
-            value: "private, no-store, no-cache, must-revalidate, max-age=0",
-          },
-        ],
-      },
-      {
-        source: "/api/admin/:path*",
-        headers: [
-          {
-            key: "Cache-Control",
-            value: "private, no-store, no-cache, must-revalidate, max-age=0",
-          },
-        ],
-      },
-      {
-        source: "/api/webhook/:path*",
-        headers: [
-          {
-            key: "Cache-Control",
-            value: "no-store, no-cache, must-revalidate, max-age=0",
-          },
-        ],
-      },
-      {
-        source: "/api/:path*/:path2*",
-        headers: [
-          {
-            key: "Vary",
-            value: "Cookie, Authorization",
-          },
-        ],
-      },
-      {
-        source: "/api/[...nextauth]",
-        headers: [
-          {
-            key: "Cache-Control",
-            value: "private, no-store, no-cache, must-revalidate, max-age=0",
-          },
-        ],
-      },
-
       // Static assets - cache forever
       {
         source: "/assets/:path*",
@@ -79,7 +32,6 @@ const nextConfig = {
           },
         ],
       },
-
       // API routes - short cache
       {
         source: "/api/:path*",
