@@ -18,7 +18,7 @@ export const useAddress = () => {
   } = useSWR(shouldFetch ? "/api/v1/address" : null, fetcher, {
     revalidateIfStale: false,
     revalidateOnReconnect: true,
-    revalidateOnFocus: false,
+    revalidateOnFocus: true,
   });
 
   const data = useMemo(

@@ -45,7 +45,12 @@ export const Account = () => {
   const isAdmin =
     session?.user?.email === "piyushthakur241199@gmail.com" ||
     session?.user?.email === "favoblis@gmail.com";
-
+const logout = () => {
+  console.log("Logging out user:", session?.user?.email);
+  console.log(`clearing storage for address ${localStorage.getItem("rouge-checkout-address")}`);
+  localStorage.removeItem("rouge-checkout-address");
+  signOut({ callbackUrl: "/" });
+}
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
@@ -91,7 +96,7 @@ export const Account = () => {
             <DropdownMenuSeparator />
             <DropdownMenuItem
               className="flex items-center text-zinc-700 font-semibold md:cursor-pointer"
-              onClick={() => signOut({ callbackUrl: "/" })}
+              onClick={() => logout()}
             >
               <LogOut className="mr-3 h-4 w-4" />
               Logout
