@@ -1,4 +1,5 @@
 import { db } from "@/lib/db";
+import { revalidateTag } from "next/cache";
 import { NextResponse } from "next/server";
 
 const allowedOrigins = [
@@ -64,6 +65,8 @@ export async function DELETE(
         categoryRatings: true,
       },
     });
+
+    revalidateTag(`reviews-${params.productId}`);
 
     return NextResponse.json(review, { headers });
   } catch (error: any) {
