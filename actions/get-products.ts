@@ -54,7 +54,7 @@ const _getProducts = unstable_cache(
     // Products listing affects category pages + home, so tag both buckets
     tags: [PRODUCT_TAG, CATEGORY_TAG],
     // Keep it reasonably fresh as fallback; admin routes will purge instantly anyway
-    revalidate: 3600,
+    //revalidate: false,
   }
 );
 

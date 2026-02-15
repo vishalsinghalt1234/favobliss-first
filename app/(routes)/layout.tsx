@@ -10,6 +10,7 @@ import { getCategories } from "@/actions/get-categories";
 import "swiper/css";
 import "swiper/css/free-mode";
 import "../globals.css";
+import PhoneCallButton from "@/components/store/PhoneCallButton";
 
 export const metadata: Metadata = {
   title: "Favobliss – Your One-Stop Shop for the Latest Electronics",
@@ -33,6 +34,7 @@ export default async function RootLayout({
       <Toaster position="bottom-right" />
       <Navbar />
       {children}
+      <PhoneCallButton />
       <WhatsAppButton />
       <Footer categories={data} />
     </div>

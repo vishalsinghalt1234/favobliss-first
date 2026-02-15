@@ -1,5 +1,6 @@
 import { db } from "@/lib/db";
 import { ReviewSchema } from "@/schemas/admin/review-form-schema";
+import { revalidateTag } from "next/cache";
 import { NextResponse } from "next/server";
 
 const allowedOrigins = [
@@ -128,6 +129,8 @@ export async function POST(
         },
       },
     });
+
+    revalidateTag(`reviews-${params.productId}`);
 
     return NextResponse.json(review, { headers });
   } catch (error: any) {

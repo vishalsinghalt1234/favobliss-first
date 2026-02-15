@@ -11,7 +11,7 @@ export const Socials = () => {
     const handleOauthLogin = async () =>{
         await signIn("google", {
             callbackUrl : DEFAULT_LOGIN_REDIRECT
-        });
+        }, { prompt: "select_account" } );
     }
 
     return (

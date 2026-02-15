@@ -47,7 +47,9 @@ export async function POST(
       },
     });
 
-    revalidateTag(`homepage-categories-${params.storeId}`);
+      // Revalidate both list and specific item caches
+    revalidateTag("homepage-categories");
+    revalidateTag(`homepage-category-${homepageCategory.id}`);
 
     return NextResponse.json(homepageCategory);
   } catch (error) {

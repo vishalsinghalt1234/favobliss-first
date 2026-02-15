@@ -1,114 +1,139 @@
 "use client";
 
-import axios from "axios";
-import { toast } from "sonner";
-import qs from "query-string";
-import { useMemo, useState } from "react";
+import { useAddessModal } from "@/hooks/use-address-modal";
+import { useCheckoutAddress } from "@/hooks/use-checkout-address";
 import { cn } from "@/lib/utils";
 import { Address } from "@prisma/client";
-import { Card, CardContent } from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { useCheckoutAddress } from "@/hooks/use-checkout-address";
-import { useAddress } from "@/hooks/use-address";
-import { useUpdateAddessModal } from "@/hooks/use-update-address-modal";
+import { Check, Edit, MapPin, Trash2 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { toast } from "sonner";
+import axios from "axios";
 
 interface AddressCardProps {
   data: Address;
   onSelect?: (address: Address) => void;
+  selectionMode?: boolean;
 }
 
-export const AddressCard = ({ data, onSelect }: AddressCardProps) => {
-  const [loading, setLoading] = useState(false);
-  const { mutate } = useAddress();
-  const { onOpen } = useUpdateAddessModal();
-  const { address, addAddress, removeAddress } = useCheckoutAddress();
+export const AddressCard = ({ data, onSelect, selectionMode = false }: AddressCardProps) => {
+  const { address: selectedAddress } = useCheckoutAddress();
+  const { onOpen, setAddress } = useAddessModal();
+  const router = useRouter();
+  const [isDeleting, setIsDeleting] = useState(false);
 
-  const isSelected = useMemo(() => {
-    if (!address) return false;
-    return address.id === data.id;
-  }, [data, address]);
+  const isSelected = selectedAddress?.id === data.id;
 
-  const handleDelete = async () => {
-    try {
-      setLoading(true);
-      const url = qs.stringifyUrl({
-        url: "/api/v1/address",
-        query: {
-          id: data.id,
-        },
-      });
-      await axios.delete(url);
-      mutate();
-      removeAddress();
-      toast.success("Address removed successfully");
-    } catch (error) {
-      console.error(error);
-      toast.error("Something went wrong");
-    } finally {
-      setLoading(false);
+  const handleCardClick = () => {
+    if (selectionMode) return; // Don't trigger address selection in selection mode
+    if (onSelect) {
+      onSelect(data);
     }
   };
 
-  const handleSelect = () => {
-    if (onSelect) {
-      onSelect(data);
-    } else {
-      addAddress(data);
+  const handleEdit = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (selectionMode) return; // Disable edit in selection mode
+    setAddress(data);
+    onOpen();
+  };
+
+  const handleDelete = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (selectionMode) return; // Disable delete in selection mode
+
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this address?"
+    );
+
+    if (!confirmDelete) return;
+
+    setIsDeleting(true);
+
+    try {
+      await axios.delete(`/api/v1/address?id=${data.id}`);
+      toast.success("Address deleted successfully");
+      router.refresh();
+      window.location.reload();
+    } catch (error) {
+      console.error("Delete error:", error);
+      toast.error("Failed to delete address");
+    } finally {
+      setIsDeleting(false);
     }
   };
 
   return (
-    <Card
+    <div
+      onClick={handleCardClick}
       className={cn(
-        "w-full pt-5 select-none bg-[#f6f4f4]",
-        isSelected && "shadow-md"
+        "relative border rounded-lg p-4 transition-all duration-200",
+        selectionMode 
+          ? "cursor-default" 
+          : "cursor-pointer hover:shadow-md",
+        isSelected && !selectionMode
+          ? "border-orange-500 bg-orange-50 shadow-md"
+          : "border-gray-200 hover:border-gray-300",
+        selectionMode && "pl-14" // Add left padding for checkbox
       )}
     >
-      <CardContent className="flex w-full">
-        <div className="w-10">
-          <Checkbox checked={isSelected} onClick={handleSelect} />
+      {/* Selected Indicator */}
+      {isSelected && !selectionMode && (
+        <div className="absolute top-4 right-4 bg-orange-500 rounded-full p-1">
+          <Check className="w-4 h-4 text-white" />
         </div>
-        <div className="w-full space-y-2">
-          <div className="flex items-center gap-4">
-            <h3 className="font-bold text-zinc-800">{data.name}</h3>
-            {data.isDefault && (
-              <Badge className="bg-neutral-700 hover:bg-neutral-700/80 cursor-default">
-                Default
-              </Badge>
-            )}
+      )}
+
+      {/* Address Details */}
+      <div className="space-y-2">
+        <div className="flex items-start justify-between">
+          <div className="flex-1">
+            <h4 className="font-semibold text-gray-900 flex items-center gap-2">
+              {data.name}
+              {data.isDefault && (
+                <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-medium">
+                  Default
+                </span>
+              )}
+            </h4>
+            <p className="text-sm text-gray-600 mt-1">{data.phoneNumber}</p>
           </div>
-          <p className="text-sm font-semibold text-zinc-600 max-w-sm">
-            {`${data.address}, ${data.landmark}, ${data.town}, ${data.district}, ${data.state} - ${data.zipCode}`}
-          </p>
-          <p className="text-sm font-semibold text-zinc-600 max-w-sm">
-            <span className="text-zinc-950 mr-1">Phone Number -</span>
-            {data.phoneNumber}
-          </p>
-          {isSelected && (
-            <div className="flex items-center gap-4">
-              <Button
-                size="sm"
-                variant="outline"
-                className="text-sm font-semibold"
-                disabled={loading}
-                onClick={onOpen}
-              >
-                Edit
-              </Button>
-              <Button
-                size="sm"
-                className="text-sm font-semibold"
-                disabled={loading}
-                onClick={handleDelete}
-              >
-                Remove
-              </Button>
-            </div>
-          )}
         </div>
-      </CardContent>
-    </Card>
+
+        <div className="flex items-start gap-2 text-sm text-gray-600">
+          <MapPin className="w-4 h-4 mt-0.5 flex-shrink-0" />
+          <p className="flex-1">
+            {data.address}, {data.town}, {data.state} - {data.zipCode}
+          </p>
+        </div>
+
+        {data.landmark && (
+          <p className="text-sm text-gray-500 ml-6">
+            Landmark: {data.landmark}
+          </p>
+        )}
+      </div>
+
+      {/* Action Buttons - Hide in selection mode */}
+      {!selectionMode && (
+        <div className="flex items-center gap-2 mt-4">
+          <button
+            onClick={handleEdit}
+            className="flex items-center gap-1 text-sm text-blue-600 hover:text-blue-700 px-3 py-1.5 rounded-md hover:bg-blue-50 transition-colors"
+          >
+            <Edit className="w-4 h-4" />
+            Edit
+          </button>
+          <button
+            onClick={handleDelete}
+            disabled={isDeleting}
+            className="flex items-center gap-1 text-sm text-red-600 hover:text-red-700 px-3 py-1.5 rounded-md hover:bg-red-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <Trash2 className="w-4 h-4" />
+            {isDeleting ? "Deleting..." : "Delete"}
+          </button>
+        </div>
+      )}
+    </div>
   );
 };

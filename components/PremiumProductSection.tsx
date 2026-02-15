@@ -20,6 +20,7 @@ const PremiumProductsSection: React.FC<PremiumProductsSectionProps> = ({
   backgroundColor = "#9fd6ff",
   className = "",
 }) => {
+
   return (
     <div
       className={`rounded-3xl w-full max-w-full px-4 py-8 md:p-8 md:pt-[48px] pt-[40px] ${className}`}
@@ -61,7 +62,7 @@ const PremiumProductCard: React.FC<PremiumProductCardProps> = ({ product }) => {
     <Link href={product.link}>
       <div className="group cursor-pointer">
         <div>
-          <div className="relative w-full h-full">
+          <div className="relative w-full aspect-[2/3]">
             <Image
               src={product.image || "/placeholder.svg"}
               alt={product.title}

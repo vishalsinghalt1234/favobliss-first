@@ -27,11 +27,11 @@ export const PincodeValidator = (props: Props) => {
   useEffect(() => {
     if (address && items.length > 0) {
       const mismatched = items.filter(
-        (item) => String(item.pincode) !== String(address.zipCode)
+        (item) => String(item.pincode) !== String(address.zipCode),
       ).length;
 
       const uniquePincodes = Array.from(
-        new Set(items.map((item) => item.pincode).filter(Boolean))
+        new Set(items.map((item) => item.pincode).filter(Boolean)),
       );
 
       setMismatchedItems(mismatched);
@@ -60,20 +60,23 @@ export const PincodeValidator = (props: Props) => {
 
       items.forEach((item) => {
         const product = response.find((p) =>
-          p.variants?.some((v:any) => v.id === item.selectedVariant.id)
+          p.variants?.some((v: any) => v.id === item.selectedVariant.id),
         );
 
         const variant = product?.variants.find(
-          (v:any) => v.id === item.selectedVariant.id
+          (v: any) => v.id === item.selectedVariant.id,
         );
 
-        const targetPincode = String(address.zipCode).trim();
+        const cleanPincode = (pin: any) =>
+          String(pin).replace(/\D/g, "").trim();
 
-        const variantPrice = variant?.variantPrices?.find((vp:any) => {
+        const targetPincode = cleanPincode(address.zipCode);
+
+        const variantPrice = variant?.variantPrices?.find((vp: any) => {
           const apiPincode = vp?.locationGroup?.locations?.find(
-            (loc:any) => loc.pincode === targetPincode
+            (loc: any) => cleanPincode(loc.pincode) === targetPincode,
           )?.pincode;
-          return apiPincode === targetPincode;
+          return cleanPincode(apiPincode) === targetPincode;
         });
 
         if (variantPrice && variantPrice.price) {
@@ -83,19 +86,19 @@ export const PincodeValidator = (props: Props) => {
             variantPrice.mrp,
             String(address.zipCode),
             variantPrice.locationGroup.deliveryDays || 0,
-            variantPrice.locationGroup.isCodAvailable || false
+            variantPrice.locationGroup.isCodAvailable || false,
           );
 
           updateItemCheckoutPrice(
             item.selectedVariant.id,
             variantPrice.price,
             variantPrice.mrp,
-            String(address.zipCode)
+            String(address.zipCode),
           );
           toast.success(`Updated price for ${item.variants[0].name}`);
         } else {
           toast.warning(
-            `The product is unavailable at this location at ${address.zipCode}`
+            `The product is unavailable at this location at ${address.zipCode}`,
           );
         }
       });
@@ -104,7 +107,7 @@ export const PincodeValidator = (props: Props) => {
       //@ts-ignore
       if (error?.response?.status === 400) {
         toast.error(
-          "The entered pincode is invalid. Please enter a valid pincode or select a different address."
+          "The entered pincode is invalid. Please enter a valid pincode or select a different address.",
         );
         return;
       }

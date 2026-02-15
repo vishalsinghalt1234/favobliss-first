@@ -104,7 +104,10 @@ export const ProductPageContent = ({
     const getData = async () => {
       try {
         if (selectedLocationGroupId) {
+          console.log("first");
           const response = await getLocationGroupById(selectedLocationGroupId);
+          console.log("res",response);
+          console.log("second");
           const locationData = localStorage.getItem("locationData");
           const pincodeData = response?.locations.find(
             (loc) =>
@@ -118,6 +121,8 @@ export const ProductPageContent = ({
     };
     getData();
   }, [selectedLocationGroupId]);
+
+  console.log("location", selectedLocationGroupId);
 
   useEffect(() => {
     const handleResize = () => {

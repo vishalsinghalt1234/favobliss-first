@@ -10,7 +10,7 @@ export const Social = () => {
     const onClick = () => {
         signIn("google", {
             callbackUrl : DEFAULT_LOGIN_REDIRECT
-        });
+        }, { prompt: "select_account" });
     }
 
     return (

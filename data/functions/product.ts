@@ -96,32 +96,38 @@ const productListInclude: Prisma.ProductInclude = {
       { createdAt: Prisma.SortOrder.asc },
       { id: Prisma.SortOrder.asc },
     ],
+    // ← Use "include" → automatically returns ALL scalar fields of Variant
+    include: {
+      size: true,
+      color: true,
 
-    select: {
-      name: true,
-      slug: true,
-      stock: true,
       images: {
         orderBy: [
           { createdAt: Prisma.SortOrder.asc },
           { id: Prisma.SortOrder.asc },
         ],
-        select: { id: true, url: true, createdAt: true },
-      },
-      variantPrices: {
         select: {
-          price: true,
-          mrp: true,
-          locationGroupId: true,
+          id: true,
+          url: true,
+          // add more image fields if you need them (alt, isPrimary, etc.)
+        },
+      },
+
+      // This is the key part you asked for
+      variantPrices: {
+        include: {
+          locationGroup: {
+            include: {
+              locations: true,           // ← full locations array
+            },
+          },
         },
       },
     },
   },
+
   reviews: {
-    // Only fetch the rating number — super cheap
-    select: {
-      rating: true,
-    },
+    select: { rating: true },
   },
 };
 
@@ -240,11 +246,15 @@ export async function productsList(
   }
 
   let resolvedLocationGroupId = locationGroupId;
+  console.log("hh", pincode, locationGroupId);
+  const cleanPincode = (pin: any) => String(pin).replace(/\D/g, "").trim();
+  console.log("first", pincode);
   if (pincode && !locationGroupId) {
     const loc = await db.location.findUnique({
-      where: { pincode: pincode.toString(), storeId },
-      select: { locationGroupId: true },
+      where: { pincode: cleanPincode(pincode) },
+     select: { locationGroupId: true },
     });
+    console.log("hey", loc)
     if (!loc?.locationGroupId) throw new Error("Invalid pincode");
     resolvedLocationGroupId = loc.locationGroupId;
   }
@@ -327,7 +337,7 @@ export async function productsList(
       : null;
     return {
       ...product,
-      variants: cardVariant ? [cardVariant] : [],
+      variants: product.variants || [],
       averageRating,
       numberOfRatings,
     };

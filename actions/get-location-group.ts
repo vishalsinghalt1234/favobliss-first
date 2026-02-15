@@ -1,3 +1,5 @@
+"use server";
+
 import { cache } from "react";
 import { LocationGroup, Location } from "@/types";
 import { allLocationGroups, locationGroupById, locationGroupByName } from "@/data/functions/locationGroup";
@@ -30,6 +32,10 @@ export const getLocationGroupById = unstable_cache(
   async (id: string): Promise<LocationGroup | null> => {
     console.log(`[CACHE MISS] Fetching location group by id: ${id}`);
     return await locationGroupById(id);
+  },
+  ['location-group-by-id'],
+  {
+    tags: ['location-groups'],
   }
 );
 

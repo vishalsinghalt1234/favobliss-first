@@ -59,7 +59,9 @@ export async function PATCH(
       },
     });
 
-    revalidateTag(`homepage-categories-${params.storeId}`);
+     revalidateTag("homepage-categories");
+    revalidateTag(`homepage-category-${params.homepageCategoryId}`);
+    revalidateTag("homepage-category");
 
     return NextResponse.json(homepageCategory);
   } catch (error) {
@@ -109,7 +111,9 @@ export async function DELETE(
       },
     });
 
-    revalidateTag(`homepage-categories-${params.storeId}`);
+    revalidateTag("homepage-categories");
+    revalidateTag(`homepage-category-${params.homepageCategoryId}`);
+    revalidateTag("homepage-category");
 
     return NextResponse.json(homepageCategory);
   } catch (error) {
@@ -273,6 +277,10 @@ export async function POST(
           ]
         : []),
     ]);
+
+    revalidateTag("homepage-categories");
+    revalidateTag(`homepage-category-${params.homepageCategoryId}`);
+    revalidateTag("homepage-category");
 
     return NextResponse.json({ message: "Products updated successfully" });
   } catch (error) {
