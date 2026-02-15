@@ -32,7 +32,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <link rel="icon" href="/assets/favicon.ico" sizes="any" />
-       <GoogleTagManager gtmId="GTM-P87DVZQV" /> 
+       <GoogleTagManager gtmId="GTM-MPPCXN9" /> 
       <body className={roboto.className}>
         <Analytics />
         <SpeedInsights />
