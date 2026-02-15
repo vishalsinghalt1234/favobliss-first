@@ -54,6 +54,11 @@ export const Summary = (props: Props) => {
   const [couponCode, setCouponCode] = useState("");
   const [loadingCoupons, setLoadingCoupons] = useState(true);
   const [isCODAvailable, setIsCODAvailable] = useState(true);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     if (items.length === 0) {
@@ -254,6 +259,10 @@ export const Summary = (props: Props) => {
       setLoading(false);
     }
   };
+  // for safely rendering the values after the first hydration to avoid mismatch between server and client
+  const safeTotalMrp = mounted ? getTotalMrp() : 0;
+  const safeTotalAmount = mounted ? getTotalAmount() : 0;
+  const safeDiscount = mounted ? discount : 0;
 
   return (
     <div className="bg-[#f6f4f4] px-6 py-6 rounded-3xl">
@@ -302,7 +311,7 @@ export const Summary = (props: Props) => {
                 Coupon Applied: {appliedCoupon.code}
               </p>
               <p className="text-xs text-green-600">
-                You saved {formatter.format(discount)}
+                You saved {formatter.format(safeDiscount)}
               </p>
             </div>
           </div>
@@ -332,16 +341,15 @@ export const Summary = (props: Props) => {
         <div className="flex justify-between items-center">
           <span className="text-gray-700 text-sm">MRP</span>
           <span className="text-gray-900 font-medium">
-            {formatter.format(getTotalMrp()).replace("₹", "")}
+            {formatter.format(safeTotalMrp).replace("₹", "")}
           </span>
         </div>
         <div className="flex justify-between items-center">
           <span className="text-gray-700 text-sm">Discount on MRP</span>
           <span className="text-green-600 font-medium">
             -
-            {formatter
-              .format(getTotalMrp() - getTotalAmount())
-              .replace("₹", "")}
+            {formatter.format(safeTotalMrp - safeTotalAmount).replace("₹", "")}
+
           </span>
         </div>
         <div className="flex justify-between items-center">
@@ -352,7 +360,7 @@ export const Summary = (props: Props) => {
           <div className="flex justify-between items-center">
             <span className="text-gray-700 text-sm">Coupon Discount</span>
             <span className="text-green-600 font-medium">
-              -{formatter.format(discount).replace("₹", "")}
+              -{formatter.format(safeDiscount).replace("₹", "")}
             </span>
           </div>
         )}
@@ -362,7 +370,8 @@ export const Summary = (props: Props) => {
       <div className="flex justify-between items-center pb-4 mb-6">
         <span className="text-lg font-semibold text-gray-900">Sub Total:</span>
         <span className="text-lg font-semibold text-gray-900">
-          {formatter.format(getTotalAmount() - discount).replace("₹", "")}
+          {formatter.format(safeTotalAmount - safeDiscount).replace("₹", "")}
+
         </span>
       </div>
 
