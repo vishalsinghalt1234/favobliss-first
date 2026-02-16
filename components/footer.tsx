@@ -21,15 +21,14 @@ export const Footer = (props: Props) => {
   const router = useRouter();
 
   const companyLinks = [
-    { name: "Site Map", link: "#" },
+    { name: "Site Map", link: "/sitemap.xml" },
     { name: "Blogs", link: "/blog?page=1" },
-    { name: "Careers At Favobliss", link: "#" },
-    { name: "Terms Of Use", link: "#" },
-    { name: "Disclaimer", link: "#" },
-    { name: "Privacy Policy", link: "#" },
-    { name: "Unboxed", link: "#" },
-    { name: "Gift Card", link: "#" },
-    { name: "Favobliss E-Star", link: "#" },
+   
+    { name: "Terms of Service", link: "/terms-conditions" },
+    { name: "Privacy Policy", link: "/privacy-policy" },
+    { name: "Cancellation Policy", link: "/cancellation-policy" },
+    { name: "Return Policy", link: "/return-policy" },
+
   ];
 
   useEffect(() => {
