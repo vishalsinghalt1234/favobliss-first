@@ -128,7 +128,7 @@ export const ProductReviews = (props: ProductReviewsProps) => {
       // if (!response.ok) {
       //   throw new Error("Failed to fetch reviews");
       // }
-      const data = await getReviews(productId);
+      const data = await getReviews(productId, 1, 100);
       const sortedReviews = data.sort((a: Review, b: Review) => {
         if (b.rating !== a.rating) {
           return b.rating - a.rating;

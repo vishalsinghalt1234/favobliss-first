@@ -67,7 +67,7 @@ const PremiumProductCard: React.FC<PremiumProductCardProps> = ({ product }) => {
               src={product.image || "/placeholder.svg"}
               alt={product.title}
               fill
-              className="object-cover max-w-full max-h-full"
+              className="object-cover rounded-xl max-w-full max-h-full"
             />
           </div>
         </div>
