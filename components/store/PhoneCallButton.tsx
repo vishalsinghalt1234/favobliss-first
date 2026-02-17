@@ -14,7 +14,7 @@ const PhoneCallButton = () => {
     <a
       href={`tel:${phoneNumber}`}
       className={`fixed ${
-        isProductPage ? "bottom-[10.7rem]" : "bottom-[8rem]"
+        isProductPage ? "bottom-[5.7rem]" : "bottom-[3rem]" 
       } right-4 sm:right-10 
         bg-blue-500 text-white rounded-full p-2 sm:p-3 shadow-lg 
         hover:bg-blue-600 transition duration-300 z-50 flex items-center justify-center`}
@@ -22,8 +22,8 @@ const PhoneCallButton = () => {
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"
-        width="40"
-        height="40"
+        width="30"
+        height="30"
         viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"

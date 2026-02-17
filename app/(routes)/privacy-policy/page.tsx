@@ -1,164 +1,140 @@
 import React from "react";
+import { Metadata, ResolvingMetadata } from "next";
 
+export async function generateMetadata(
+  parent: ResolvingMetadata
+): Promise<Metadata> {
+  const previousImages = (await parent).openGraph?.images || [];
+
+  return {
+    title: "Privacy Policy | Favobliss",
+    description:
+      "Privacy Policy of Favobliss Infotech Pvt Ltd. Learn how we collect, use, and protect your personal information when you visit or make a purchase from our website.",
+    openGraph: {
+      type: "website",
+      images: [
+        "https://favobliss.com/assets/favobliss-logo.jpg",
+        ...previousImages,
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: "Privacy Policy | Favobliss",
+      description:
+        "Privacy Policy of Favobliss Infotech Pvt Ltd. Learn how we collect, use, and protect your personal information when you visit or make a purchase from our website.",
+      images: [
+        "https://favobliss.com/assets/favobliss-logo.jpg",
+      ],
+    },
+    category: "ecommerce",
+  };
+}
 const page = () => {
   const privacyPolicy = `
- Favobliss that you simply care how information about you is employed and shared and that we appreciate your trust in us to try to do that carefully and sensibly. This notice describes the privacy policy of Favobliss.com. By visiting Favobliss.com, you're accepting and consenting to the practices described during this Privacy Notice. 
+  This Privacy Policy describes how your personal information is collected, used, and shared when you visit or make a purchase from www.favobliss.com
+ The Site is operated by Favobliss Infotech Pvt Ltd.
+By using our website, you agree to the collection and use of information in accordance with this Privacy Policy.
+Company Details
+Business Name: Favobliss Infotech Pvt Ltd
+Website: https://www.favobliss.com
+Address:
+245/49, 4th Floor, East School Block, Mandawali, Delhi – 110092
+Email: support@favobliss.com
+Phone: +91 9990343789
+Personal Information We Collect
+Device Information
+When you visit the Site, we automatically collect certain information about your device, including:
+Web browser type
+IP address
+Time zone
+Cookies installed on your device
+Pages or products viewed
+Referring websites or search terms
+Interaction with the Site
+This information is referred to as Device Information.
+Technologies Used
+Cookies: Small data files stored on your device to improve browsing experience
+Log files: Track actions on the Site, including IP address, browser type, date & time
+Web beacons / pixels / tags: Used to analyze browsing behavior and website performance
+Order Information
+When you make or attempt to make a purchase through the Site, we collect:
+Name
+Shipping address
+Billing address
+Email address
+Phone number
+Order and delivery details
+Currently, Favobliss supports Cash on Delivery (COD) only.
+We do not collect or store credit/debit card details.
+Personal Information
+“Personal Information” includes both Device Information and Order Information.
+ How We Use Your Personal Information
+We use the collected information to:
+Process and fulfill orders
+Arrange delivery and order confirmation
+Communicate with customers
+Provide customer support
+Screen orders for fraud or risk
+Improve and optimize our website
+Comply with legal and regulatory obligations
+Analytics & Website Improvement
+We use analytics tools (such as Google Analytics) to understand how customers interact with our Site and to improve user experience. These tools may collect Device Information but do not personally identify users.
+🤝 Sharing Your Personal Information
+We do not sell or rent your personal information.
+We may share your information only with:
+Delivery and logistics partners
+Technology and support service providers
+Government or legal authorities when required by law
+All third parties are obligated to protect your data and use it only for authorized purposes.
+Cookies
+Cookies help us:
+Remember items in your cart
+Improve website functionality
+Enhance user experience
+You can control or disable cookies through your browser settings.
+Please note that disabling cookies may limit certain features of the Site.
+
+🔐 Data Security
+
+We implement appropriate technical and organizational security measures, including:
+
+SSL encryption
+
+Secure servers
+
+Restricted access to personal data
+
+However, no method of transmission over the Internet is completely secure.
+
+👤 Your Rights
+
+You have the right to:
+
+Access your personal information
+
+Request correction or updates
+
+Request deletion of data (subject to legal requirements)
+
+To exercise these rights, contact us at support@favobliss.com
+.
+
+👶 Minor
+The Site is not intended for individuals under the age of 18 years.
+Minors may use the Site only under the supervision of a parent or legal guardian, as per Indian law.
+Data Retention
+We retain your order and personal information only as long as necessary to fulfill orders, comply with legal obligations, or resolve disputes.
+ Changes to This Privacy Policy
+We may update this Privacy Policy from time to time to reflect changes in our practices or legal requirements.
+Any updates will be posted on this page.
+📞 Contact Us
+For questions, concerns, or complaints regarding this Privacy Policy, please contact:
+Favobliss Infotech Pvt Ltd
+📍 245/49, 4th Floor, East School Block, Mandawali, Delhi – 110092
+📧 support@favobliss.com
+📞 +91 9990343789
 
-What Personal Information About Customers Do 
-
-The information we learn from customers helps us personalize and continually improve your shopping experience at Favobliss.com. We use your information to help sellers in handling orders, deliver products and services, process payments, communicate with you about orders, products, services, nd promotional offers update our records and usually maintain your accounts with us, display content like wish lists and customer reviews and recommend merchandise and services which may be of interest to you. We also use this information to enhance our platform, prevent or detect fraud or abuses of our website and enable third parties to hold out technical, logistical, r other functions on our behalf.
-
- 
-
-Here are the kinds of data we gather.
-
- 
-
-Information You Give Us: We receive and store any information you enter on our website or give us the other way. Click here to ascertain samples of what we collect. ready to  "you'll prefer to not provide certain information on the opposite you'd possibly not be ready to take advantage of the variety of our features. We use the knowledge that you simply provide for such purposes as responding to your requests, customizing future buying you, improving our the form, and communicating with you.
-
- 
-
-Automatic Information: We receive and store certain sorts of information whenever you interact with us. For instance, like many websites, we use "cookies" and that we obtain certain sorts of information when your browser accesses https://www.favobliss.com/ advertisements and other content served by or on behalf of other internet sites. Click here to ascertain samples of the knowledge we receive. We can also receive/store information about your location and your mobile device, including a singular identifier for your device. We may use this information for internal analysis and supply you with location-based services, like advertising, search results, and other personalized content.
-
- 
-
-E-mail Communications: to assist us in e e-mails more useful and interesting, we frequently receive a confirmation once you open ail from Favobliss your computer supports such capabilities. We also compare our customer list to lists received from other companies in an attempt to avoid sending unnecessary messages to our customers. If you are doing not want to receive e-mail or other mail from us, please adjust your Customer Communication Preferences.
-
- 
-
-Information from Other Sources: we'd receive information about you from other sources and add it to our account information.
-
- 
-
-
-By using or continuing to use the location you comply with our use of your information (including sensitive personal information) in accordance with this Privacy Notice, as could also be amended from time to time by Favobliss its discretion. you furthermore may agree and consent to us collecting, storing, processing, transferring, and sharing information (including sensitive personal information) associated with you with third parties or service providers for the needs as began during this Privacy Notice.
-
- 
-
-We could even be required to share the aforesaid information with government authorities and agencies for the wants of verification of identity or for prevention, detection or investigation, including cyber incidents, prosecution, nd punishment of offenses. You agree and consent for Favobliss disclose your information, if so required, under applicable law.
-
- 
- What About Cookies?
-
-Cookies are alphanumeric identifiers that we transfer to your computer's disc drive-through your browser to enable our systems to acknowledge your browser and to provide features like Recommended for You, personalized advertisements on other internet sites (e.g., Favobliss Associates with content served by Favobliss.com) and storage of things in your handcart between visits.
-
- 
-
-The Help menu on the the bar of most browsers will tell you ways to prevent your browser from accepting new cookies, the thanks to having the browser notify you once you receive a replacement cookie and the way to disable cookies altogether. Additionally, you'll disable or delete similar data employed by the ser add-ons, like Flash cookies, by changing the add-on's settings or visiting the the site of its manufacturer. However, because cookies allow you to require advantage of a number of Favobliss.com's essential features, we recommend that you simply leave them turned on. as an example, if you block or otherwise reject our cookies, you'll not be ready to add items to your handcart, proceed to Checkout, or use any Favobliss and services that need you to check-in.
-
-If you are doing leave cookies turned on, make certain to log off once you finish employing a shared computer.
-
- 
-Does Favobliss the knowledge it receives?
-
-Information about our customer is a crucial part of our business and that we aren't within the the ness of selling it to others. customer information only as described below and with Favobliss.com, Inc. and therefore the subsidiaries which Favobliss.com, Inc., controls which are either subject to the present Privacy Notice or follow practices a minimum of as protective as those described during this Privacy Notice.
-
- 
-
-Affiliated Businesses we don't Control: We work closely with affiliated businesses. In some cases, like Marketplace sellers, these businesses operate stores at Favobliss sell offerings to you at Favobliss.com. In other cases, we offer services jointly with or on behalf of those businesses. Click here for a few samples of co-branded and joint offerings. You’ll tell when a 3rd party is involved in your transactions and that we share customer information associated with those transactions thereupon third party. Third-Party Service Providers: We employ other companies and individuals to perform functions on our behalf. Examples include fulfilling orders, delivering packages, sending postal mail and e-mail, removing repetitive information from customer lists, analyzing data, providing marketing assistance, providing search results and links (including paid listings and links), processing credit card payments, and providing customer service. They have access to personal information needed to perform their functions, but may not use it for other purposes. Further, they must process the personal information in accordance with this Privacy Notice and as permitted by applicable law.
-
- 
-
-Promotional Offers: Sometimes we send offers to selected groups of Favobliss on behalf of other businesses. When we do this, we do not give that business your name and address. If you do not want to receive such offers, please adjust your Customer Communication Preferences.
-
-Business Transfers: As we continue to develop our business, we might sell or buy stores, subsidiaries, or business units. In such transactions, customer information generally is one of the transferred business assets but remains subject to the promises made in any pre-existing Privacy Notice (unless, of course, the customer consents otherwise). Also, in the unlikely event that Favobliss.com, Inc. or substantially all of its assets are acquired, customer information will of course be one of the transferred assets.
-
- 
-
-Protection of Favobliss Others: We release account and other personal information when we believe release is appropriate to comply with applicable law; enforce or apply our Conditions of Use and other agreements; or protect the rights, property or safety of Favobliss.com, our users, or others. This includes exchanging information with other companies, organizations, government or regulatory authorities for fraud protection and credit risk reduction. Obviously, however, this does not include selling, renting, sharing, or otherwise disclosing personally identifiable information from customers for commercial purposes in a way that is contrary to the commitments made in this Privacy Notice
-
-With your consent: Other than as set out above, you will receive notice when information about you might go to third parties and you will have an opportunity to choose not to Share the information.
-
- 
-
-How Secure Is Information About Me?
-
-We work to protect the security of your information during transmission by using Secure Sockets Layer (SSL) software, which encrypts information you input in addition to maintaining security of your information as per the International Standard IS/ISO/IEC 27001 on "Information Technology Security Techniques Information Security Management System-Requirements".
-
-We reveal only the last four digits of your credit card numbers when confirming an order. Of course, we transmit the entire credit card number to the appropriate credit card company during order processing.
-
-We maintain physical, electronic, nd procedural safeguards in connection with the collection, storage, d disclosure of personal information (including sensitive personal information). Our security procedures mean that we may occasionally request proof of identity before we disclose personal information to you.
-
-It is important for you to protect against unauthorized access to your password and to your computer. Be sure to sign off when you finish using a shared computer. Click here for more information on how to sign off.
-
- 
-What About Third-Party Advertisers and Links to Other Web sites?
-
-Our site includes third-party advertising and links to other Web sites. For more information about third-party advertising on Favobliss.com, including personalized or interest-based ads, please read our Interest-Based Ads policy.
-
- 
-
-What Information Can I Access?
-
-Favobliss you access to a broad range of information about your account and your interactions with  the limited purpose of viewing and, in certain cases, updating that information. This list will change as our website evolves.
-
- 
-
-What Choices Do I Have?
-
-As discussed above, you can always choose not to provide information, even though it might be needed to make a purchase or to take advantage of such Favobliss as Your Profile, Wish Lists, Customer Reviews.
-
-You can add or update certain information on pages such as those referenced in the Which Information Can I Access? Section. When you update information, we usually keep a copy of the previous version for our records. If you do not want to receive e-mail or other mail from us, please adjust your Customer Communication Preferences. (If you do not want to receive Conditions of Use and other legal notices from us, such as this Privacy Notice, those notices will still govern your use of Favobliss orders placed with Favobliss.com, and it is your responsibility to review them for changes.)
-
- 
-
-If you do not want us to use personal information that we gather to personalize advertisements we display to you, please adjust your Advertising Preferences.
-
- 
-
-The Help menu on the menu bar of most browsers will tell you how to prevent your browser from accepting new cookies, how to have the browser notify you when you receive a new cookie and how to disable cookies altogether. Additionally, you can disable or delete similar data used by browser add-ons, such as Flash cookies, by changing the add-on's settings or visiting the website of its manufacturer.
-
-However, because cookies allow you to take advantage of some of Favobliss essential features, we recommend that you leave them turned on. For instance, if you block or otherwise reject our cookies, you will not be able to add items to your Shopping Cart, proceed to Checkout or use any Favobliss and services that require you to Sign in.
-
-  
-
-Are Children Allowed to Use Favobliss.com?
-
-Use of Favobliss available only to persons who can form a legally binding contract under the Indian Contract Act, 1872. If you are a minor i.e. under the age of 18 years, you may use  with the involvement of a parent or guardian.
-
- 
-
-Notices and Revisions
-
-If you have any concern about privacy or grievances at Favobliss.com, please contact us with a an thorough description and we will try to resolve the issue for you.
-
- 
-
-Our business changes constantly and our Privacy Notice and the Conditions of Use will change also. We may e-mail periodic reminders of our notices and conditions unless you have instructed us not to, but you should check our website frequently to see recent changes.
-
- 
-
-Unless stated otherwise, our current Privacy Notice applies to all information that we have about you and your account. We stand behind the promises we make, however, and will never materially change our policies and practices to make them less protective of customer information collected in the past without the consent of affected customers.
-
- 
-
- 
-
-Examples of Information Collected
-
-Information You Give Us
-
- 
-
-You provide most such information when you search, buy, bid, post, participate in a contest or questionnaire or communicate with customer service. For example, you provide information when you: search for a product; place an order through Favobliss one of our third-party sellers; provide information in Your Account (and you might have more than one if you have used more than one e-mail address when shopping with us) or Your Profile; communicate with us by phone or otherwise; complete a questionnaire or a contest entry form; compile Wish Lists or another gift registries, provide and rate Reviews; and employ other personal notification services such as Available to Order Notifications. As a result of those actions, you might supply us with such information as your name; address and phone number; credit card information; people to whom purchases have been dispatched (including addresses and phone numbers); content of reviews; the personal description in Your Profile; and financial information.
-
- 
-
-Automatic Information
-
- 
-
-Examples of the information we collect and analyze include: the Internet protocol (IP) address used to connect your computer to the Internet; login; e-mail address; password; computer and connection information such as browser type and version; operating system and platform; purchase history, which we sometimes aggregate with similar information from other customers to create features such as Best Sellers; the full Uniform Resource Locators (URL) clickstream to, through and from our website (including date and time); cookie number; products you viewed or searched for, and any phone number used to call our customer service number. We may also use browser data such as cookies, Flash cookies (also known as Flash Local Shared Objects), or similar data on certain parts of our website for fraud prevention and other purposes. During some visits,we may use software tools such as JavaScript to measure and collect session information, including page response times download errors, length of visits to certain pages, page interaction information (such as scrolling, clicks, and mouse-overs), and methods used to browse away from the page.
-
-  
-
-Information You Can Access
-
- 
-
-Examples of information you can access easily at Favobliss up-to-date information regarding recent orders; personal information (including name, e-mail, password, communications and personalized advertising preferences and address book); payment settings (including credit card information and gift certificate, gift card, nd cheque balances); e-mail notification settings (including Alerts, Available to Order notifications, Delivers, Recommended for You and newsletters); recommendations (including recent product view history, prior-order history and Favorites); Wish Lists and Marketplace seller accounts and Your Profile (including your product Reviews, Requests, and Recommendations, your List mania lists, "So You'd Like to..." guides, personal profile, people you tagged as interesting, and Favobliss Friends.
-
-`.trim();
+  `.trim();
   const formatPolicy = (raw: string) => {
     const headings = new Set([
       "FAVOBLISS PRIVACY POLICY",

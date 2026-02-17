@@ -24,10 +24,12 @@ export const Footer = (props: Props) => {
     { name: "Site Map", link: "/sitemap.xml" },
     { name: "Blogs", link: "/blog?page=1" },
    
-    { name: "Terms of Service", link: "/terms-conditions" },
+    { name: "Terms & Conditions", link: "/terms-conditions" },
     { name: "Privacy Policy", link: "/privacy-policy" },
     { name: "Cancellation Policy", link: "/cancellation-policy" },
     { name: "Return Policy", link: "/return-policy" },
+    { name: "About Us", link: "/about-us" },
+
 
   ];
 

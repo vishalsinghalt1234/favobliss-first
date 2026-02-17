@@ -11,7 +11,7 @@ const WhatsAppButton = () => {
     <a
       href="https://wa.me/+919990343789?text=Hello%20Favobliss%20Team!"
       className={`fixed ${
-        isProductPage ? "bottom-[5.7rem]" : "bottom-[3rem]"
+        isProductPage ? "bottom-[9.7rem]" : "bottom-[7rem]"
       } right-4 sm:right-10 
         bg-green-500 text-white rounded-full p-2 sm:p-3 shadow-lg 
         hover:bg-green-600 transition duration-300 z-50 flex items-center justify-center`}
@@ -23,8 +23,8 @@ const WhatsAppButton = () => {
         xmlns="http://www.w3.org/2000/svg"
         x="0px"
         y="0px"
-        width="40"
-        height="40"
+        width="30"
+        height="30"
         viewBox="0 0 48 48"
       >
         <path

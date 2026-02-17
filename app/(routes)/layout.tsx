@@ -34,8 +34,8 @@ export default async function RootLayout({
       <Toaster position="bottom-right" />
       <Navbar />
       {children}
-      <PhoneCallButton />
       <WhatsAppButton />
+      <PhoneCallButton />
       <Footer categories={data} />
     </div>
   );

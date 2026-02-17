@@ -1,60 +1,167 @@
 import React from "react";
+import { Metadata, ResolvingMetadata } from "next";
 
+export async function generateMetadata(
+  parent: ResolvingMetadata
+): Promise<Metadata> {
+  const previousImages = (await parent).openGraph?.images || [];
+
+  return {
+    title: "Return Policy | Favobliss",
+    description:
+      "Return Policy of Favobliss Infotech Pvt Ltd. Learn about our return and refund policies for products purchased from our website.",
+    openGraph: {
+      type: "website",
+      images: [
+        "https://favobliss.com/assets/favobliss-logo.jpg",
+        ...previousImages,
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: "Return Policy | Favobliss",
+      description:
+        "Return Policy of Favobliss Infotech Pvt Ltd. Learn about our return and refund policies for products purchased from our website.",
+      images: [
+        "https://favobliss.com/assets/favobliss-logo.jpg",
+      ],
+    },
+    category: "ecommerce",
+  };
+}
 const page = () => {
+  const terms = `
+At Favobliss, customer satisfaction is our priority. We follow a transparent and structured return, replacement, and refund process to ensure a smooth experience for our customers.
+Return / Refund Window
+Products are eligible for return, replacement, or refund within 10 days from the date of delivery.
+Requests raised after this period will not be accepted.
+Refund Processing
+Refunds (if applicable) are initiated after successful pickup and verification of the product.
+Once approved, the refund will be processed within 5–7 working days.
+The maximum time for completing any return, replacement, or refund request is up to 10 days.
+Mandatory Unboxing Video (Important)
+To ensure transparency and prevent misuse:
+Customers must record a clear unboxing video while opening the package.
+The video must clearly show:
+Sealed package
+Product condition
+Any damage, defect, or mismatch (if present)
+Please email the unboxing video to support@favobliss.com
+ as per company policy.
+⚠️ Without an unboxing video, return or replacement requests may be rejected.
+
+How to Raise a Return / Replacement / Refund Request
+Log in to your Favobliss account
+Go to My Orders
+Click on Return
+Select the appropriate reason for return
+Choose one of the available options:
+Available Options
+Exchange
+Exchange the product for a new identical item (size/color/model where applicable).
+Replacement
+Replace the product if it is damaged, defective, broken, or not functioning properly.
+Refund
+If the product or preferred variant is unavailable or out of stock, you may opt for a refund.
+ Verification Process
+All return requests are subject to verification.
+Customers must keep the following items ready:
+Original invoice
+Original packaging
+Price tags
+Accessories, manuals, freebies (if any)
+
+Damaged / Defective / Wrong Product
+If you receive a damaged, defective, or mismatched product, please inform us within 24 hours of delivery.
+Email us clear images and video proof at support@favobliss.com
+Replacement requests must be raised within 5 days of delivery.
+Special Category – TV & Mobile Phones
+For TVs and Mobile Phones, our delivery executive may provide on-site unboxing assistance.
+Pickup and delivery for exchanges or replacements will be scheduled together.
+Pickup & Replacement
+In case of replacements or exchanges, pickup and delivery are coordinated simultaneously.
+Final approval is subject to Favobliss return and replacement guidelines.
+🤝 Our Commitment
+All requests are handled strictly according to Favobliss’s Return & Replacement Guarantee, ensuring fairness, transparency, and customer trust.
+Need Help?
+For any assistance, feel free to contact us at:
+Email: support@favobliss.com
+Phone: +91 9990343789
+
+  `.trim();
+
+  const formatTerms = (raw: string) => {
+    const headings = new Set([
+      "ACCESS TO THE APP",
+      "ELIGIBILITY",
+      "COMPLIANCE REQUIREMENTS",
+      "USER ACCOUNT",
+      "PAYMENT POLICY",
+      "DELIVERY POLICY",
+      "RETURN POLICY",
+      "ORDER CANCELLATION POLICY",
+      "REFUND POLICY",
+    ]);
+
+    return raw.split("\n").map((line, idx) => {
+      const text = line.trim();
+
+      // blank line spacing
+      if (!text) return <div key={idx} className="h-3" />;
+
+      // numbered list item
+      if (/^\d+\.\s+/.test(text)) {
+        return (
+          <p key={idx} className="text-sm md:text-base leading-7 text-gray-700">
+            {text}
+          </p>
+        );
+      }
+
+      // main headings
+      if (headings.has(text.toUpperCase())) {
+        return (
+          <h2
+            key={idx}
+            className="mt-6 mb-2 text-lg md:text-xl font-semibold text-gray-900"
+          >
+            {text}
+          </h2>
+        );
+      }
+
+      // sub headings (simple heuristic)
+      if (text.length <= 40 && text === text.toUpperCase()) {
+        return (
+          <h3 key={idx} className="mt-4 mb-1 text-base font-semibold text-gray-900">
+            {text}
+          </h3>
+        );
+      }
+
+      // normal paragraph
+      return (
+        <p key={idx} className="text-sm md:text-base leading-7 text-gray-700">
+          {text}
+        </p>
+      );
+    });
+  };
+
   return (
-    <div className="w-full flex flex-col text-left items-center justify-center mb-8">
-      <h1 className="text-3xl font-bold mt-10">
-        Favobliss Product Return Policy
-      </h1>
-      <p className=" mt-6 text-lg w-[80%] mx-auto flex flex-col gap-y-4">
-        HERE IS HOW THE FAVOBLISS PRODUCT RETURNS & REFUND POLICY WORKS:
-        <span className="text-red-600 font-semibold">
-          Return or Refund policy 10 days
-        </span>
-        <span className="text-red-600 font-semibold">
-          Refund will be initiated and processed if applicable after the pickup
-          has been done with 5-7 working days.
-        </span>
-        In the refund or replacement or exchange process there is a complete
-        chain to sort out the issues from the side of the customer. After
-        receiving the product from FAVOBLISS through delivery boy customer
-        receives product and raises query for refund or replacement or exchange
-        again a particular process is followed so kindly record an unboxing
-        video as per the company policies and mail that video at
-        support@favobliss.com The maximum number of days takes for a refund or
-        replacement or exchange process is 10 days.* Log in to Favobliss and go
-        to your Orders tab. Tap or click on Return to create a request. Select
-        your applicable reason of return — based on which the option of an
-        exchange, where applicable, will appear. Three options will be
-        available: Exchange: Your order will be exchanged for a new identical
-        product of a different size or color Replace: The product in your order
-        will be replaced with an identical product in case it is damaged (broken
-        or spoiled) or defective (has a functional problem that causes it not to
-        work). Refund: If the product of your choice is unavailable in your
-        preferred size or color or model, or if it is out of stock, you may
-        decide that you want your money back. In this scenario, you may choose a
-        Refund to have your money returned to you Depending on the kind of
-        product you wish to return, your return request may have to undergo a
-        verification process Following verification, you will be required to
-        confirm your decision-based on the category of the product ordered. Keep
-        ready all the requisite items necessary for a smooth returns process —
-        including invoice, original packaging, price tags, freebies,
-        accessories, etc. Kindly unbox your product safely so that you don’t
-        damage your product’s packaging otherwise your refund or replacement
-        request will not be accepted.* If you received a broken product or
-        mismatched product kindly mail us within 24hrs of your delivery date
-        with video clips and images**. If you have received a damaged or
-        defective product or if it is not as described or mismatched product,
-        you can raise a replacement request on the Website/App/Mobile site
-        within 5 days of receiving the product. In case you have ordered TV or
-        Mobile, our delivery executive will give you onsite unboxing of your
-        product**. Pickup and Delivery of your order will be scheduled
-        hand-in-hand in case of exchanges and replacements
-        <span className="underline pt-4">
-          Your request will be fulfilled according to Favobliss’s
-          returns/replacement guarantee
-        </span>
-      </p>
+    <div className="w-full flex flex-col text-center items-center justify-center mb-8">
+      <h1 className="text-3xl font-bold mt-10">Favobliss Return & Refund Policy</h1>
+
+      {/* Added: content container */}
+      <div className="w-full max-w-5xl mt-6 px-4">
+        <div className="text-left bg-white rounded-xl border border-gray-200 shadow-sm">
+         
+
+          <div className="px-5 md:px-8 py-6 max-h-[75vh] overflow-y-auto">
+            {formatTerms(terms)}
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

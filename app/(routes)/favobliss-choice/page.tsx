@@ -64,7 +64,7 @@ export async function generateMetadata(
     openGraph: {
       type: "website",
       images: [
-        "https://res.cloudinary.com/dgcksrb1n/image/upload/v1749465423/qoujpnmfjabip1yrllvs.jpg",
+        "https://favobliss.com/assets/favobliss-logo.jpg",
         ...previousImages,
       ],
     },
@@ -74,7 +74,7 @@ export async function generateMetadata(
       description:
         "Discover handpicked styles & trends for every occasion. Shop Favobliss Choice products.",
       images: [
-        "https://res.cloudinary.com/dgcksrb1n/image/upload/v1749465423/qoujpnmfjabip1yrllvs.jpg",
+        "https://favobliss.com/assets/favobliss-logo.jpg",
       ],
     },
     category: "ecommerce",
