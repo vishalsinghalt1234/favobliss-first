@@ -778,7 +778,7 @@ export const ProductReviews = (props: ProductReviewsProps) => {
             >
               <FaArrowLeft className="w-5 h-5 text-gray-700" />
             </button>
-            <div className="relative max-w-full max-h-full">
+            <div className="relative w-[80vw] h-[80vh]">
               <Image
                 src={allReviewImages[currentImageIndex]?.url || ""}
                 alt="Review image"
