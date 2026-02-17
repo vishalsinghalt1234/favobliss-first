@@ -442,7 +442,7 @@ model Review {
   userName        String
   rating          Int
   title           String?
-  text            String
+  text            String?
   images          ReviewImage[]          @relation("ReviewToReviewImage")
   videos          ReviewVideo[]          @relation("ReviewToReviewVideo")
   categoryRatings ReviewCategoryRating[] @relation("ReviewToCategoryRating")

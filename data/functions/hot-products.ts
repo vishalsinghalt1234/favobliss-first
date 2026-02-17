@@ -12,14 +12,34 @@ const includeRelations = {
         product: {
           include: {
             variants: {
+              orderBy: [
+                { createdAt: "asc" },
+                { id: "asc" },
+              ],
               include: {
-                images: true,
-                variantPrices: true,
+                images: {
+                  orderBy: [
+                    { createdAt: "asc" },
+                    { id: "asc" },
+                  ],
+                  select: {
+                    id: true,
+                    url: true,
+                  },
+                },
+                variantPrices: {
+                  include: {
+                    locationGroup: {
+                      include: { locations: true },
+                    },
+                  },
+                },
               },
             },
             category: true,
             subCategory: true,
             brand: true,
+            reviews: { select: { rating: true } },
           },
         },
       },
@@ -42,14 +62,34 @@ export async function getHotProductsSection(storeId: string) {
           product: {
             include: {
               variants: {
+                orderBy: [
+                  { createdAt: "asc" },
+                  { id: "asc" },
+                ],
                 include: {
-                  images: true,
-                  variantPrices: true,
+                  images: {
+                    orderBy: [
+                      { createdAt: "asc" },
+                      { id: "asc" },
+                    ],
+                    select: {
+                      id: true,
+                      url: true,
+                    },
+                  },
+                  variantPrices: {
+                    include: {
+                      locationGroup: {
+                        include: { locations: true },
+                      },
+                    },
+                  },
                 },
               },
               category: true,
               subCategory: true,
               brand: true,
+              reviews: { select: { rating: true } },
             },
           },
         },
@@ -61,27 +101,44 @@ export async function getHotProductsSection(storeId: string) {
   if (!section) return null;
 
   // Flatten: extract product from the join table
-  const products = section.products.map((item) => ({
-    ...item.product,
-    // Optional: add average rating if you have it
-    // averageRating: item.product.reviews?.length ? ... : 0,
-  }));
+  const products = section.products.map((item) => {
+    const product = item.product;
+
+    product.variants.sort((a: any, b: any) => {
+      const aTime = new Date(a.createdAt).getTime();
+      const bTime = new Date(b.createdAt).getTime();
+      if (aTime !== bTime) return aTime - bTime;
+      return a.id.localeCompare(b.id);
+    });
+
+    product.variants.forEach((v: any) => {
+      v.images.sort((a: any, b: any) => {
+        const aTime = new Date(a.createdAt).getTime();
+        const bTime = new Date(b.createdAt).getTime();
+        if (aTime !== bTime) return aTime - bTime;
+        return a.id.localeCompare(b.id);
+      });
+    });
+    const ratings = product.reviews.map((r: { rating: number }) => r.rating);
+    const numberOfRatings = ratings.length;
+    const averageRating =
+      numberOfRatings > 0
+        ? Number(
+            (ratings.reduce((a: number, b: number) => a + b, 0) / numberOfRatings).toFixed(2),
+          )
+        : 0;
+
+    return {
+      ...product,
+      averageRating,
+      numberOfRatings,
+    };
+  });
 
   return {
     bannerImage: section.bannerImage,
     products,
   };
-}
-
-/**
- * Get the hot products section (used in Server Components / homepage)
- * Returns null if not created yet
- */
-export async function getHotProductsForStore(storeId: string) {
-  return await db.hotProductsSection.findFirst({
-    where: { storeId },
-    ...includeRelations,
-  });
 }
 
 /**
@@ -95,15 +152,5 @@ export async function getHotProductsBanner(storeId: string) {
       bannerImage: true,
       updatedAt: true,
     },
-  });
-}
-
-/**
- * Secure admin version – validates store ownership
- */
-export async function getHotProductsSectionSecure(storeId: string) {
-  return await db.hotProductsSection.findFirst({
-    where: { storeId },
-    ...includeRelations,
   });
 }

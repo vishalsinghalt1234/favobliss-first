@@ -453,27 +453,25 @@ export const AddReviewForm = ({
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Title *
+                Title
               </label>
               <Input
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="Enter title for the review"
                 className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-                required
               />
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Your Review *
+                Your Review
               </label>
               <Textarea
                 value={text}
                 onChange={(e) => setText(e.target.value)}
                 placeholder="Share your experience with this product..."
                 className="min-h-[120px] resize-none border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-                required
               />
               <p className="text-xs text-gray-500 mt-1">
                 {text.length}/1000 characters
@@ -592,7 +590,6 @@ export const AddReviewForm = ({
                 disabled={
                   isLoading ||
                   rating === 0 ||
-                  !text.trim() ||
                   (isAdmin && !customUserName.trim()) ||
                   categoryRatings.some((cr) => cr.rating === 0)
                 }
