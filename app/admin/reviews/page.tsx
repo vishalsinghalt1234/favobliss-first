@@ -51,7 +51,7 @@ const ReviewsPage = async ({ params }: { params: { storeId: string } }) => {
     productName: item.product.variants[0]?.name || "Unnamed Product",
     userName: item.userName,
     rating: item.rating,
-    text: item.text,
+    text: item.text ?? undefined,
     imageCount: item.images.length,
     createdAt: format(item.createdAt, "MMMM do, yyyy"),
   }));

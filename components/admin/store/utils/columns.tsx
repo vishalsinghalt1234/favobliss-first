@@ -34,7 +34,7 @@ export type ReviewColumn = {
   productName: string;
   userName: string;
   rating: number;
-  text: string;
+  text?: string;
   imageCount: number;
   createdAt: string;
   productId: string;
