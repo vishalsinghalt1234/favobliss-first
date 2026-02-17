@@ -2,9 +2,7 @@ import React from "react";
 import { Metadata, ResolvingMetadata } from "next";
 
 export async function generateMetadata(
-  parent: ResolvingMetadata
-): Promise<Metadata> {
-  const previousImages = (await parent).openGraph?.images || [];
+) {
 
   return {
     title: "Return Policy | Favobliss",
@@ -14,7 +12,6 @@ export async function generateMetadata(
       type: "website",
       images: [
         "https://favobliss.com/assets/favobliss-logo.jpg",
-        ...previousImages,
       ],
     },
     twitter: {
