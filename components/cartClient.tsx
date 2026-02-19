@@ -29,6 +29,7 @@ const CartClient = () => {
       color: item.selectedVariant.color?.name,
       selectedVariant: item.selectedVariant,
       slug: item.slug,
+      pincode: item.pincode,
     }));
     setCheckOutItems(checkoutItems);
   }, [items, setCheckOutItems]);

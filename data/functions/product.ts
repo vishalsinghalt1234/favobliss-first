@@ -139,7 +139,7 @@ const variantBaseInclude: Prisma.VariantInclude = {
     orderBy: [
       { createdAt: Prisma.SortOrder.asc },
       { id: Prisma.SortOrder.asc },
-    ], 
+    ],
   },
   variantPrices: {
     include: {
@@ -246,15 +246,16 @@ export async function productsList(
   }
 
   let resolvedLocationGroupId = locationGroupId;
-  console.log("hh", pincode, locationGroupId);
   const cleanPincode = (pin: any) => String(pin).replace(/\D/g, "").trim();
-  console.log("first", pincode);
   if (pincode && !locationGroupId) {
-    const loc = await db.location.findUnique({
-      where: { pincode: cleanPincode(pincode) },
-     select: { locationGroupId: true },
+    const loc = await db.location.findFirst({
+      where: {
+        pincode: { contains: cleanPincode(pincode) },
+      },
+      select: { locationGroupId: true, pincode: true },
     });
-    console.log("hey", loc)
+
+    if (!loc) throw new Error("Pincode not serviceable in your area");
     if (!loc?.locationGroupId) throw new Error("Invalid pincode");
     resolvedLocationGroupId = loc.locationGroupId;
   }

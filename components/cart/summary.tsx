@@ -2,7 +2,7 @@
 
 import axios from "axios";
 import { toast } from "sonner";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useSession } from "next-auth/react";
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
 import { ChevronRight } from "lucide-react";
@@ -34,9 +34,7 @@ export const Summary = (props: Props) => {
   const session = useSession();
   const { address } = useCheckoutAddress();
   const { items, removeAll, getTotalMrp } = useCart();
-  const [paymentMethod, setPaymentMethod] = useState<"razorpay" | "cod">(
-    "cod"
-  );
+  const [paymentMethod, setPaymentMethod] = useState<"razorpay" | "cod">("cod");
   const [gstNumber, setGstNumber] = useState<string>("");
   const [hasGstNumber, setHasGstNumber] = useState(false);
   const [showOffers, setShowOffers] = useState(false);
@@ -67,7 +65,7 @@ export const Summary = (props: Props) => {
     }
 
     const allItemsCodAvailable = items.every(
-      (item) => item.isCodAvailable === true
+      (item) => item.isCodAvailable === true,
     );
     setIsCODAvailable(allItemsCodAvailable);
   }, [items]);
@@ -117,7 +115,7 @@ export const Summary = (props: Props) => {
       const cartProductIds = checkOutItems.map((item) => item?.id);
       const couponProductIds = coupon.products.map((p) => p.productId);
       const isMatch = couponProductIds.some((id) =>
-        cartProductIds.includes(id)
+        cartProductIds.includes(id),
       );
       if (!isMatch) {
         toast.error("Coupon does not apply to the products in your cart");
@@ -134,6 +132,8 @@ export const Summary = (props: Props) => {
     toast.success("Coupon removed");
   };
 
+  const cleanPincode = (pin: any) => String(pin).replace(/\D/g, "").trim();
+
   const onCheckOut = async () => {
     try {
       if (session.status === "unauthenticated") {
@@ -148,6 +148,17 @@ export const Summary = (props: Props) => {
 
       if (!address) {
         toast.error("Please provide a shipping address");
+        return;
+      }
+
+      const shippingPin = cleanPincode(address?.zipCode);
+      const allMatch = checkOutItems.every(
+        (item) => cleanPincode(item.pincode) === shippingPin,
+      );
+      if (!allMatch) {
+        toast.error(
+          "Cart prices don't match shipping location. Please update.",
+        );
         return;
       }
 
@@ -226,7 +237,7 @@ export const Summary = (props: Props) => {
             } catch (error) {
               console.error("Error updating order status:", error);
               toast.error(
-                "Payment successful, but failed to update order status"
+                "Payment successful, but failed to update order status",
               );
               // Optionally navigate here if needed, but let modal handle success
             }
@@ -263,6 +274,14 @@ export const Summary = (props: Props) => {
   const safeTotalMrp = mounted ? getTotalMrp() : 0;
   const safeTotalAmount = mounted ? getTotalAmount() : 0;
   const safeDiscount = mounted ? discount : 0;
+
+  const hasMismatches = useMemo(() => {
+    if (!address) return true;
+    const shippingPin = cleanPincode(address.zipCode);
+    return !items.every(
+      (item) => cleanPincode(item.pincode) === shippingPin,
+    );
+  }, [address, checkOutItems]);
 
   return (
     <div className="bg-[#f6f4f4] px-6 py-6 rounded-3xl">
@@ -347,9 +366,7 @@ export const Summary = (props: Props) => {
         <div className="flex justify-between items-center">
           <span className="text-gray-700 text-sm">Discount on MRP</span>
           <span className="text-green-600 font-medium">
-            -
-            {formatter.format(safeTotalMrp - safeTotalAmount).replace("₹", "")}
-
+            -{formatter.format(safeTotalMrp - safeTotalAmount).replace("₹", "")}
           </span>
         </div>
         <div className="flex justify-between items-center">
@@ -371,7 +388,6 @@ export const Summary = (props: Props) => {
         <span className="text-lg font-semibold text-gray-900">Sub Total:</span>
         <span className="text-lg font-semibold text-gray-900">
           {formatter.format(safeTotalAmount - safeDiscount).replace("₹", "")}
-
         </span>
       </div>
 
@@ -432,7 +448,11 @@ export const Summary = (props: Props) => {
       {/* Checkout Button */}
       <Button
         size="lg"
-        disabled={loading || !isAddressCorrect}
+        disabled={
+          loading ||
+          !isAddressCorrect ||
+          (pathname === "/checkout/address" && hasMismatches)
+        }
         className="w-full bg-orange-400 hover:bg-orange-500 text-gray-900 font-semibold py-4 rounded-full text-base"
         onClick={onCheckOut}
       >
