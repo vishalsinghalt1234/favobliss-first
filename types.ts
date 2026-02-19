@@ -172,6 +172,7 @@ export interface SubCategory {
   categoryId?: string;
   createdAt?: string;
   updatedAt?: string;
+  parent?:any;
 }
 
 export interface ProductSpecification {
@@ -333,7 +334,6 @@ export interface Variant {
   sku: string;
   hsn: string;
   tax: number;
-  gstIn: string;
   name: string;
   slug: string;
   about?: string;

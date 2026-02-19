@@ -169,12 +169,6 @@ const imageUrl = sortedImages?.[0]?.url || "/placeholder-image.jpg";
             className="object-contain rounded-lg p-2"
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />
-
-          {theVariant && theVariant.stock === 0 && (
-            <div className="absolute top-2 left-2 bg-red-500 text-white px-2 py-1 rounded-full text-xs font-medium">
-              Out of Stock
-            </div>
-          )}
         </div>
 
         <div className="space-y-2 px-2">

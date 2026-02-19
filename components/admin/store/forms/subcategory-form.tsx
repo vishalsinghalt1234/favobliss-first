@@ -73,6 +73,7 @@ export const SubCategoryForm = ({
           icon: initialData.icon || "",
           categoryId: initialData.categoryId,
           parentId: initialData.parentId || undefined,
+          metaTitle: initialData.metaTitle || "",
           reviewCategories: Array.isArray(initialData.reviewCategories)
             ? initialData.reviewCategories
                 .filter(
@@ -88,6 +89,7 @@ export const SubCategoryForm = ({
           bannerImage: "",
           description: "",
           categoryId: "",
+          metaTitle: "",
           parentId: undefined,
           reviewCategories: [],
         },
@@ -257,6 +259,23 @@ export const SubCategoryForm = ({
                     The slug must be unique, contain only lowercase letters,
                     numbers, and hyphens, and be at most 60 characters long.
                   </FormDescription>
+                  <FormMessage className="w-full px-2 py-2 bg-destructive/20 text-destructive/70 rounded-md" />
+                </FormItem>
+              )}
+            />
+              <FormField
+              control={form.control}
+              name="metaTitle"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Meta Title</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      disabled={loading}
+                      placeholder="Meta Title"
+                    />
+                  </FormControl>
                   <FormMessage className="w-full px-2 py-2 bg-destructive/20 text-destructive/70 rounded-md" />
                 </FormItem>
               )}

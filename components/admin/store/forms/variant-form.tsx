@@ -90,8 +90,9 @@ export default function VariantForm({
   disabled,
 }: VariantFormProps) {
   const form = useFormContext<z.infer<typeof ProductSchema>>();
-  const { control, getValues } = form;
+  const { control, getValues, setValue } = form;
   const [slugCharCount, setSlugCharCount] = useState(0);
+  const [commonMRP, setCommonMRP] = useState(0);
 
   const {
     fields: priceFields,
@@ -101,6 +102,27 @@ export default function VariantForm({
     control,
     name: `variants.${index}.variantPrices`,
   });
+
+  useEffect(() => {
+    const prices = getValues(`variants.${index}.variantPrices`);
+    if (prices.length > 0) {
+      const firstMRP = prices[0].mrp ?? 0;
+      setCommonMRP(firstMRP);
+      prices.forEach((p, i) => {
+        if (p.mrp !== firstMRP) {
+          setValue(`variants.${index}.variantPrices.${i}.mrp`, firstMRP);
+        }
+      });
+    }
+  }, [getValues, setValue, index]);
+
+  const handleMRPChange = (newMRP: number) => {
+    setCommonMRP(newMRP);
+    const prices = getValues(`variants.${index}.variantPrices`);
+    prices.forEach((_, i) => {
+      setValue(`variants.${index}.variantPrices.${i}.mrp`, newMRP);
+    });
+  };
 
   return (
     <div className="border p-4 rounded-md">
@@ -396,23 +418,6 @@ export default function VariantForm({
         />
         <FormField
           control={control}
-          name={`variants.${index}.gstIn`}
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>GSTIN Number</FormLabel>
-              <FormControl>
-                <Input
-                  {...field}
-                  placeholder="Enter GSTIN Number"
-                  disabled={disabled}
-                />
-              </FormControl>
-              <FormMessage className="w-full px-2 py-2 bg-destructive/20 text-destructive/70 rounded-md" />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={control}
           name={`variants.${index}.tax`}
           render={({ field }) => (
             <FormItem>
@@ -448,6 +453,18 @@ export default function VariantForm({
             </FormItem>
           )}
         />
+        <FormItem>
+          <FormLabel>MRP</FormLabel>
+          <NumberInput
+            value={commonMRP}
+            onChange={handleMRPChange}
+            placeholder="Enter MRP"
+            disabled={disabled}
+            min={0}
+            step={1}
+          />
+          <FormMessage className="w-full px-2 py-2 bg-destructive/20 text-destructive/70 rounded-md" />
+        </FormItem>
         <div className="mt-4 md:col-span-2">
           <div className="flex justify-between items-center mb-2">
             <h4 className="font-medium">Prices by Location Group</h4>
@@ -459,7 +476,7 @@ export default function VariantForm({
                 appendPrice({
                   locationGroupId: locationGroups[0].id,
                   price: 0,
-                  mrp: 0,
+                  mrp: commonMRP,
                 })
               }
               disabled={disabled || locationGroups.length === 0}
@@ -517,26 +534,6 @@ export default function VariantForm({
                         ))}
                       </SelectContent>
                     </Select>
-                    <FormMessage className="w-full px-2 py-2 bg-destructive/20 text-destructive/70 rounded-md" />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={control}
-                name={`variants.${index}.variantPrices.${priceIndex}.mrp`}
-                render={({ field }) => (
-                  <FormItem className="flex-1">
-                    <FormLabel>MRP (INR)</FormLabel>
-                    <FormControl>
-                      <NumberInput
-                        value={field.value}
-                        onChange={field.onChange}
-                        placeholder="Enter MRP"
-                        disabled={disabled}
-                        min={0}
-                        step={1}
-                      />
-                    </FormControl>
                     <FormMessage className="w-full px-2 py-2 bg-destructive/20 text-destructive/70 rounded-md" />
                   </FormItem>
                 )}

@@ -163,7 +163,6 @@ export const ProductForm = ({
               sku: "",
               hsn: "",
               tax: 0,
-              gstIn: "",
               gtin: "",
               specifications: [],
               variantPrices:
@@ -607,7 +606,6 @@ export const ProductForm = ({
                   sku: "",
                   hsn: "",
                   tax: 0,
-                  gstIn: "",
                   gtin: "",
                   specifications: [],
                   variantPrices:

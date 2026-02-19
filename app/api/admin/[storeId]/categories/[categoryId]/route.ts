@@ -20,7 +20,7 @@ export async function PATCH(
       return new NextResponse("Invalid data provided", { status: 400 });
     }
 
-    const { name, slug, bannerImage, landingPageBanner, description } = validatedData.data;
+    const { name, slug, bannerImage, landingPageBanner, description, metaTitle } = validatedData.data;
 
     if (!session || !session.user || !session.user.id) {
       return new NextResponse("Unauthorized Access", { status: 401 });
@@ -58,6 +58,7 @@ export async function PATCH(
         landingPageBanner,
         bannerImage,
         description,
+        metaTitle
       },
     });
     // ✅ Purge cached category + product listing data
