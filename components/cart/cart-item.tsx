@@ -41,29 +41,29 @@ export const CartItem = ({ data, deliveryDays }: CartItemProps) => {
     setMounted(true);
   }, []);
 
-  const handleSelectItem = () => {
-    const formattedData: CartSelectedItem = {
-      id: data.id,
-      variantId: data.selectedVariant.id,
-      price: data.price,
-      mrp: data?.mrp || 0,
-      quantity: data.checkOutQuantity,
-      image: data.selectedVariant.images[0]?.url || "",
-      about: data.selectedVariant.about,
-      name: data.selectedVariant.name,
-      size: data.selectedVariant.size?.value,
-      color: data.selectedVariant.color?.name,
-      selectedVariant: data.selectedVariant,
-      locationId: data.locationId,
-      slug: data.selectedVariant.slug,
-    };
+  // const handleSelectItem = () => {
+  //   const formattedData: CartSelectedItem = {
+  //     id: data.id,
+  //     variantId: data.selectedVariant.id,
+  //     price: data.price,
+  //     mrp: data?.mrp || 0,
+  //     quantity: data.checkOutQuantity,
+  //     image: data.selectedVariant.images[0]?.url || "",
+  //     about: data.selectedVariant.about,
+  //     name: data.selectedVariant.name,
+  //     size: data.selectedVariant.size?.value,
+  //     color: data.selectedVariant.color?.name,
+  //     selectedVariant: data.selectedVariant,
+  //     locationId: data.locationId,
+  //     slug: data.selectedVariant.slug,
+  //   };
 
-    if (isChecked) {
-      removeSelectedItems(data.selectedVariant.id);
-    } else {
-      selectItem(formattedData);
-    }
-  };
+  //   if (isChecked) {
+  //     removeSelectedItems(data.selectedVariant.id);
+  //   } else {
+  //     selectItem(formattedData);
+  //   }
+  // };
 
   const onRemoveItem = () => {
     removeSelectedItems(data.selectedVariant.id);

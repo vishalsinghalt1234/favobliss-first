@@ -222,6 +222,7 @@ export interface CartSelectedItem {
   selectedVariant?: Variant;
   variantId: string;
   locationId?: string | null;
+  pincode:string;
 }
 
 export interface PriceRange {

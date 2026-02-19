@@ -124,7 +124,12 @@ export default function HeaderMobile({
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const query = e.target.value;
     setSearchQuery(query);
-    debouncedSearch(query);
+    if (!query.trim()) {
+      setSearchResults(null);
+    } else {
+      setIsSearching(true);
+      debouncedSearch(query);
+    }
   };
 
   // Handle search result click
@@ -310,9 +315,6 @@ export default function HeaderMobile({
               onChange={handleSearchChange}
               onFocus={() => {
                 setShowSearchResults(true);
-                if (!searchQuery.trim()) {
-                  debouncedSearch("");
-                }
               }}
               onKeyDown={handleKeyDown}
             />
@@ -428,80 +430,72 @@ export default function HeaderMobile({
           </div>
         )}
 
-        {showSearchResults && (
+        {searchQuery && showSearchResults && (
           <div className="absolute top-full left-0 right-0 bg-white border border-gray-200 rounded-md shadow-lg z-[9999] max-h-96 overflow-y-auto mt-1">
-            <div className="flex flex-col md:flex-row min-h-[300px] max-h-[400px]">
-            
-
-              <div className="w-full md:w-1/2">
-                <div className="p-3 bg-gray-50 border-b border-gray-200">
-                  <h3 className="text-base font-semibold text-gray-900">
-                    {searchQuery || !searchResults?.isSuggested
-                      ? "Products"
-                      : "Popular Products"}
-                  </h3>
+            <div className="p-3 bg-gray-50 border-b border-gray-200">
+              <h3 className="text-base font-semibold text-gray-900">
+                Products
+              </h3>
+            </div>
+            <div className="overflow-y-auto max-h-[350px]">
+              {isSearching ? (
+                <div className="px-3 py-2 text-sm text-gray-700 relative h-[150px]">
+                  <div className="absolute inset-0 flex items-center justify-center bg-white/80 z-50">
+                    <div className="h-8 w-8 animate-spin rounded-full border-4 border-gray-300 border-t-black" />
+                  </div>
                 </div>
-                <div className="overflow-y-auto max-h-[350px]">
-                  {isSearching ? (
-                    <div className="px-3 py-2 text-sm text-gray-700 relative h-[150px]">
-                      <div className="absolute inset-0 flex items-center justify-center bg-white/80 z-50">
-                        <div className="h-8 w-8 animate-spin rounded-full border-4 border-gray-300 border-t-black" />
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="py-2">
-                      {(searchResults?.products ?? []).length > 0 ? (
-                        <>
-                          {searchResults?.products.map((product) => (
-                            <button
-                              key={product.id}
-                              onClick={() =>
-                                handleResultClick(
-                                  `/${product?.variants[0]?.slug}`,
-                                )
-                              }
-                              className="w-full text-left px-3 py-2 hover:bg-gray-100 transition-colors border-b border-gray-100 last:border-b-0"
-                            >
-                              <div className="flex items-center gap-2">
-                                {product.variants[0]?.images[0] ? (
-                                  <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                                    <Image
-                                      src={product.variants[0].images[0].url}
-                                      alt={product.variants[0].name}
-                                      width={32}
-                                      height={32}
-                                      className="object-contain rounded"
-                                    />
-                                  </div>
-                                ) : (
-                                  <div className="w-10 h-10 bg-gray-200 rounded-lg flex items-center justify-center flex-shrink-0">
-                                    <div className="w-6 h-6 bg-gray-300 rounded"></div>
-                                  </div>
-                                )}
-                                <div className="flex-1 min-w-0">
-                                  <p className="text-sm font-medium text-gray-900 line-clamp-2">
-                                    {product.variants[0].name}
-                                  </p>
-                                </div>
+              ) : (
+                <div className="py-2">
+                  {(searchResults?.products ?? []).length > 0 ? (
+                    <>
+                      {searchResults?.products.map((product) => (
+                        <button
+                          key={product.id}
+                          onClick={() =>
+                            handleResultClick(
+                              `/${product?.variants[0]?.slug}`,
+                            )
+                          }
+                          className="w-full text-left px-3 py-2 hover:bg-gray-100 transition-colors border-b border-gray-100 last:border-b-0"
+                        >
+                          <div className="flex items-center gap-2">
+                            {product.variants[0]?.images[0] ? (
+                              <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                <Image
+                                  src={product.variants[0].images[0].url}
+                                  alt={product.variants[0].name}
+                                  width={32}
+                                  height={32}
+                                  className="object-contain rounded"
+                                />
                               </div>
-                            </button>
-                          ))}
-                        </>
-                      ) : (
-                        <>
-                          {searchQuery &&
-                            !isSearching &&
-                            (searchResults?.products ?? []).length === 0 && (
-                              <div className="px-3 py-5 text-sm text-gray-500 text-center">
-                                No products found
+                            ) : (
+                              <div className="w-10 h-10 bg-gray-200 rounded-lg flex items-center justify-center flex-shrink-0">
+                                <div className="w-6 h-6 bg-gray-300 rounded"></div>
                               </div>
                             )}
-                        </>
-                      )}
-                    </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-medium text-gray-900 line-clamp-2">
+                                {product.variants[0].name}
+                              </p>
+                            </div>
+                          </div>
+                        </button>
+                      ))}
+                    </>
+                  ) : (
+                    <>
+                      {searchQuery &&
+                        !isSearching &&
+                        (searchResults?.products ?? []).length === 0 && (
+                          <div className="px-3 py-5 text-sm text-gray-500 text-center">
+                            No products found
+                          </div>
+                        )}
+                    </>
                   )}
                 </div>
-              </div>
+              )}
             </div>
           </div>
         )}

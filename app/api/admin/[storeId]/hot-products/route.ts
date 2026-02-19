@@ -1,5 +1,6 @@
 import { auth } from "@/auth";
 import { db } from "@/lib/db";
+import { revalidateTag } from "next/cache";
 import { NextResponse } from "next/server";
 
 const SINGLETON_ID = "hot-products-singleton";
@@ -75,6 +76,8 @@ export async function PATCH(
         },
       },
     });
+    
+    revalidateTag(`hot-products-${params.storeId}`);
 
     return NextResponse.json(section);
   } catch (error) {

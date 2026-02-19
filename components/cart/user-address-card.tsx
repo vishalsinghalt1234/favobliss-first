@@ -187,18 +187,27 @@ export const UserAddressCard = ({ data, label }: UserAddressCardProps) => {
     setShowPricingDialog(true);
   };
 
+//   useEffect(() => {
+//   if (selectedAddress && items.length > 0) {
+//     const mismatched = items.filter(item => cleanPincode(item.pincode) !== cleanPincode(selectedAddress.zipCode));
+//     if (mismatched.length > 0) {
+//       setSelectedTempAddress(selectedAddress); // Use current selected
+//       setMismatchedItems(mismatched);
+//       setShowPricingDialog(true);
+//     }
+//   }
+// }, [selectedAddress, items]); // Trigger on address or items change
+
   const handlePriceUpdate = async () => {
-    if (!selectedAddress || mismatchedItems.length === 0) return;
+    if (!selectedTempAddress || mismatchedItems.length === 0) return;
 
     setIsUpdatingPrices(true);
 
     try {
       const { products: response } = await getProducts({
         variantIds: mismatchedItems.map((item) => item.selectedVariant.id),
-        pincode: Number(cleanPincode(selectedAddress.zipCode)),
+        pincode: Number(cleanPincode(selectedTempAddress.zipCode)),
       });
-
-      
 
       for (const item of mismatchedItems) {
         const product = response.find((p) =>
@@ -223,7 +232,7 @@ export const UserAddressCard = ({ data, label }: UserAddressCardProps) => {
             item.selectedVariant.id,
             variantPrice.price,
             variantPrice.mrp,
-            String(selectedAddress.zipCode),
+            String(selectedTempAddress.zipCode),
             variantPrice.locationGroup?.deliveryDays || 0,
             variantPrice.locationGroup?.isCodAvailable || false,
           );
@@ -232,12 +241,14 @@ export const UserAddressCard = ({ data, label }: UserAddressCardProps) => {
             item.selectedVariant.id,
             variantPrice.price,
             variantPrice.mrp,
-            String(selectedAddress.zipCode),
+            String(selectedTempAddress.zipCode),
           );
           toast.success(`Updated price for ${targetPincode}`);
         } else {
+          // removeItem(item.selectedVariant.id); // useCart.removeItem
+          // removeSelectedItems(item.selectedVariant.id); // useCheckout
           toast.warning(
-            `The product is unavailable at this location (${selectedAddress.zipCode})`,
+            `The product is unavailable at this location (${selectedTempAddress.zipCode})`,
           );
         }
       }

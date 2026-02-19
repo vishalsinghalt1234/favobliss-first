@@ -231,7 +231,12 @@ const totalAmount = mounted ? (getTotalAmount() || 0) : 0;
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const query = e.target.value;
     setSearchQuery(query);
-    debouncedSearch(query);
+    if (!query.trim()) {
+      setSearchResults(null);
+    } else {
+      setIsSearching(true);
+      debouncedSearch(query);
+    }
   };
 
   const handleResultClick = (href: string) => {
@@ -297,9 +302,6 @@ const totalAmount = mounted ? (getTotalAmount() || 0) : 0;
                   onChange={handleSearchChange}
                   onFocus={() => {
                     setShowSearchResults(true);
-                    if (!searchQuery.trim()) {
-                      debouncedSearch("");
-                    }
                   }}
                   onKeyDown={handleKeyDown}
                 />
@@ -415,177 +417,69 @@ const totalAmount = mounted ? (getTotalAmount() || 0) : 0;
               </div>
             )}
             {/* Search Results Dropdown */}
-            {showSearchResults && (
+            {searchQuery && showSearchResults && (
               <div className="absolute top-full left-0 right-0 bg-white border border-gray-200 rounded-lg shadow-lg z-[9999] mt-1 overflow-hidden">
-                <div className="flex min-h-[400px] max-h-[500px]">
-                  {/* Left Side - Suggestions */}
-                  <div className="w-1/2 border-r border-gray-200">
-                    <div className="p-4 bg-gray-50 border-b border-gray-200">
-                      <h3 className="text-lg font-semibold text-gray-900">
-                        {searchQuery || !searchResults?.isSuggested
-                          ? "Suggestions"
-                          : "Explore These Categories"}
-                      </h3>
-                    </div>
-                    <div className="overflow-y-auto max-h-[300px]">
-                      {isSearching ? (
-                        <div className="px-4 py-3 text-sm text-gray-700 relative h-[200px]">
-                          <div className="absolute inset-0 flex items-center justify-center bg-white/80 z-50">
-                            <div className="h-8 w-8 animate-spin rounded-full border-4 border-gray-300 border-t-black" />
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="py-2">
-                          {(searchResults?.categories ?? []).length > 0 && (
-                            <>
-                              {searchResults?.categories.map((category) => (
-                                <button
-                                  key={category.id}
-                                  onClick={() =>
-                                    handleResultClick(
-                                      `/category/${category.slug}?page=1`,
-                                    )
-                                  }
-                                  className="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition-colors border-b border-gray-100 last:border-b-0"
-                                >
-                                  {category.name}
-                                </button>
-                              ))}
-                            </>
-                          )}
-
-                          {/* Subcategories */}
-                          {(searchResults?.subCategories ?? []).length > 0 && (
-                            <>
-                              {searchResults?.subCategories?.map(
-                                (subCategory) => (
-                                  <button
-                                    key={subCategory.id}
-                                    onClick={() =>
-                                      handleResultClick(
-                                        `/category/${
-                                          subCategory.category?.slug ||
-                                          "unknown"
-                                        }?sub=${subCategory.slug}?page=1`,
-                                      )
-                                    }
-                                    className="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition-colors border-b border-gray-100 last:border-b-0"
-                                  >
-                                    {subCategory.name}
-                                  </button>
-                                ),
-                              )}
-                            </>
-                          )}
-
-                          {/* Brands */}
-                          {(searchResults?.brands ?? []).length > 0 && (
-                            <>
-                              {searchResults?.brands?.map((brand) => (
-                                <button
-                                  key={brand.id}
-                                  onClick={() =>
-                                    handleResultClick(
-                                      `/brand/${brand.slug}?page=1`,
-                                    )
-                                  }
-                                  className="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition-colors border-b border-gray-100 last:border-b-0"
-                                >
-                                  {brand.name}
-                                </button>
-                              ))}
-                            </>
-                          )}
-
-                          {/* No results message */}
-                          {searchQuery &&
-                            !isSearching &&
-                            (searchResults?.categories ?? []).length === 0 &&
-                            (searchResults?.subCategories ?? []).length === 0 &&
-                            (searchResults?.brands ?? []).length === 0 &&
-                            (searchResults?.products ?? []).length === 0 && (
-                              <div className="px-4 py-6 text-sm text-gray-500 text-center">
-                                No suggestions found
-                              </div>
-                            )}
-                        </div>
-                      )}
-                    </div>
+                <div className="max-h-[500px]">
+                  <div className="p-4 bg-gray-50 border-b border-gray-200">
+                    <h3 className="text-lg font-semibold text-gray-900">
+                      Products
+                    </h3>
                   </div>
-
-                  {/* Right Side - Products */}
-                  <div className="w-1/2">
-                    <div className="p-4 bg-gray-50 border-b border-gray-200">
-                      <h3 className="text-lg font-semibold text-gray-900">
-                        {searchQuery || !searchResults?.isSuggested
-                          ? "Products"
-                          : "Popular Products"}
-                      </h3>
-                    </div>
-                    <div className="overflow-y-auto max-h-[300px]">
-                      {isSearching ? (
-                        <div className="px-4 py-3 text-sm text-gray-700 relative h-[200px]">
-                          <div className="absolute inset-0 flex items-center justify-center bg-white/80 z-50">
-                            <div className="h-8 w-8 animate-spin rounded-full border-4 border-gray-300 border-t-black" />
-                          </div>
+                  <div className="overflow-y-auto max-h-[450px]">
+                    {isSearching ? (
+                      <div className="relative h-[200px] px-4 py-3 text-sm text-gray-700">
+                        <div className="absolute inset-0 flex items-center justify-center bg-white/80 z-50">
+                          <div className="h-8 w-8 animate-spin rounded-full border-4 border-gray-300 border-t-black" />
                         </div>
-                      ) : (
-                        <div className="py-2">
-                          {(searchResults?.products ?? []).length > 0 ? (
-                            <>
-                              {searchResults?.products.map((product) => (
-                                <button
-                                  key={product.id}
-                                  onClick={() =>
-                                    handleResultClick(
-                                      `/${product?.variants[0]?.slug}`,
-                                    )
-                                  }
-                                  className="w-full text-left px-4 py-3 hover:bg-gray-100 transition-colors border-b border-gray-100 last:border-b-0"
-                                >
-                                  <div className="flex items-center gap-3">
-                                    {product.variants[0]?.images[0] ? (
-                                      <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                                        <Image
-                                          src={
-                                            product.variants[0].images[0].url
-                                          }
-                                          alt={product.variants[0].name}
-                                          width={40}
-                                          height={40}
-                                          className="object-contain rounded"
-                                        />
-                                      </div>
-                                    ) : (
-                                      <div className="w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center flex-shrink-0">
-                                        <div className="w-8 h-8 bg-gray-300 rounded"></div>
-                                      </div>
-                                    )}
-                                    <div className="flex-1 min-w-0">
-                                      <p className="text-sm font-medium text-gray-900 line-clamp-2">
-                                        {product.variants[0].name}
-                                      </p>
+                      </div>
+                    ) : searchResults ? (
+                      <div className="py-2">
+                        {searchResults.products.length > 0 ? (
+                          <>
+                            {searchResults.products.map((product) => (
+                              <button
+                                key={product.id}
+                                onClick={() =>
+                                  handleResultClick(
+                                    `/${product?.variants[0]?.slug}`,
+                                  )
+                                }
+                                className="w-full text-left px-4 py-3 hover:bg-gray-100 transition-colors border-b border-gray-100 last:border-b-0"
+                              >
+                                <div className="flex items-center gap-3">
+                                  {product.variants[0]?.images[0] ? (
+                                    <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                      <Image
+                                        src={
+                                          product.variants[0].images[0].url
+                                        }
+                                        alt={product.variants[0].name}
+                                        width={40}
+                                        height={40}
+                                        className="object-contain rounded"
+                                      />
                                     </div>
+                                  ) : (
+                                    <div className="w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center flex-shrink-0">
+                                      <div className="w-8 h-8 bg-gray-300 rounded"></div>
+                                    </div>
+                                  )}
+                                  <div className="flex-1 min-w-0">
+                                    <p className="text-sm font-medium text-gray-900 line-clamp-2">
+                                      {product.variants[0].name}
+                                    </p>
                                   </div>
-                                </button>
-                              ))}
-                            </>
-                          ) : (
-                            <>
-                              {/* No products message */}
-                              {searchQuery &&
-                                !isSearching &&
-                                (searchResults?.products ?? []).length ===
-                                  0 && (
-                                  <div className="px-4 py-6 text-sm text-gray-500 text-center">
-                                    No products found
-                                  </div>
-                                )}
-                            </>
-                          )}
-                        </div>
-                      )}
-                    </div>
+                                </div>
+                              </button>
+                            ))}
+                          </>
+                        ) : (
+                          <div className="px-4 py-6 text-sm text-gray-500 text-center">
+                            No products found
+                          </div>
+                        )}
+                      </div>
+                    ) : null}
                   </div>
                 </div>
               </div>
