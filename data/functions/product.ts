@@ -157,6 +157,21 @@ const variantBaseInclude: Prisma.VariantInclude = {
   },
 };
 
+async function getAllDescendantSubCategoryIds(subCategoryId: string): Promise<string[]> {
+  const descendants: string[] = [subCategoryId];
+  const children = await db.subCategory.findMany({
+    where: { parentId: subCategoryId },
+    select: { id: true },
+  });
+
+  for (const child of children) {
+    const childDescendants = await getAllDescendantSubCategoryIds(child.id);
+    descendants.push(...childDescendants);
+  }
+
+  return descendants;
+}
+
 /* ---------- GET PRODUCTS LIST ---------- */
 export async function productsList(
   query: ProductQuery,
@@ -201,10 +216,14 @@ export async function productsList(
 
   // Base filters
   if (categoryId) where.categoryId = categoryId;
-  if (subCategoryId) where.subCategoryId = subCategoryId;
   if (brandId) where.brandId = brandId;
   if (type) where.type = type;
   if (isFeatured !== undefined) where.isFeatured = isFeatured;
+
+  if (subCategoryId) {
+    const allSubCategoryIds = await getAllDescendantSubCategoryIds(subCategoryId);
+    where.subCategoryId = { in: allSubCategoryIds };
+  }
 
   // Variant filters
   if (colorId || sizeId || variantIds.length > 0) {

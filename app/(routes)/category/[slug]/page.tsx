@@ -87,6 +87,8 @@ export async function generateMetadata(
     };
   }
 
+  const entityTitle = 'metaTitle' in currentEntity && currentEntity.metaTitle ? currentEntity.metaTitle : currentEntity.name;
+
   const categoryName = searchParams.category
     ? `${searchParams.category[0].toUpperCase()}${searchParams.category
         .slice(1)
@@ -94,15 +96,13 @@ export async function generateMetadata(
     : "";
 
   return {
-    title: `Buy ${categoryName} ${currentEntity.name} Online | Get Deals, Shop Now!`,
-    description: `Dress to impress: Latest styles & trends for every occasion. Shop ${categoryName} ${currentEntity.name}`,
+    title: `${entityTitle}`,
     openGraph: {
       type: "website",
     },
     twitter: {
       card: "summary_large_image",
-      title: `Buy ${categoryName} ${currentEntity.name} Online | Get Deals, Shop Now!`,
-      description: `Dress to impress: Latest styles & trends for every occasion. Shop ${categoryName} ${currentEntity.name}`,
+      title: `${entityTitle}`,
     },
     category: "ecommerce",
   };

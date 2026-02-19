@@ -49,6 +49,7 @@ export async function PATCH(
       categoryId,
       parentId,
       reviewCategories,
+      metaTitle
     } = validatedData.data;
 
     if (!session || !session.user || !session.user.id) {
@@ -108,6 +109,7 @@ export async function PATCH(
         description,
         categoryId,
         parentId,
+        metaTitle,
         reviewCategories: reviewCategories || [],
       },
     });

@@ -80,19 +80,32 @@ export const ProductPageContent = ({
   };
 
   const breadcrumbItems = [
-    {
-      label: product?.category?.name,
-      href: `/category/${product?.category?.slug}?page=1`,
-    },
-    ...(product?.subCategory
-      ? [
-          {
-            label: product?.subCategory?.name,
-            href: `/category/${product?.category?.slug}?sub=${product?.subCategory?.slug}&page=1`,
-          },
-        ]
-      : []),
-  ];
+  {
+    label: product?.category?.name,
+    href: `/category/${product?.category?.slug}?page=1`,
+  },
+
+  // Parent SubCategory (if exists)
+  ...(product?.subCategory?.parent
+    ? [
+        {
+          label: product?.subCategory?.parent?.name,
+          href: `/category/${product?.category?.slug}?sub=${product?.subCategory?.parent?.slug}&page=1`,
+        },
+      ]
+    : []),
+
+  // Child SubCategory
+  ...(product?.subCategory
+    ? [
+        {
+          label: product?.subCategory?.name,
+          href: `/category/${product?.category?.slug}?sub=${product?.subCategory?.slug}&page=1`,
+        },
+      ]
+    : []),
+];
+
 
   useEffect(() => {
     if (product?.id) {

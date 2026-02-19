@@ -328,6 +328,7 @@ model Category {
   products          Product[]     @relation("CategoryToProduct")
   subCategories     SubCategory[] @relation("CategoryToSubCategory")
   name              String
+  metaTitle         String?
   slug              String        @unique
   bannerImage       String
   landingPageBanner String?
@@ -350,6 +351,7 @@ model SubCategory {
   products           Product[]     @relation("SubCategoryToProduct")
   slug               String        @unique
   name               String
+  metaTitle          String?
   bannerImage        String
   description        String?
   reviewCategories   Json[]        @default([])
@@ -500,7 +502,6 @@ model Variant {
   sku                   String?                @unique
   hsn                   String?
   tax                   Float?                 @default(0)
-  gstIn                 String?
   gtin                  String?
   name                  String
   slug                  String                 @unique

@@ -51,6 +51,7 @@ export async function POST(
       parentId,
       icon,
       reviewCategories,
+      metaTitle
     } = validatedData.data;
 
     if (!session || !session.user || !session.user.id) {
@@ -99,6 +100,7 @@ export async function POST(
         description,
         categoryId,
         parentId,
+        metaTitle,
         storeId: params.storeId,
         reviewCategories: reviewCategories || [],
       },

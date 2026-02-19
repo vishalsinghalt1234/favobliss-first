@@ -25,10 +25,6 @@ export const VariantSchema = z
     sku: z.string().optional(),
     hsn: z.string().optional(),
     tax: z.number().optional(),
-    gstIn: z
-      .string()
-      .optional()
-      .transform((val) => (val === null ? "" : val)),
     gtin: z
       .string()
       .optional()
