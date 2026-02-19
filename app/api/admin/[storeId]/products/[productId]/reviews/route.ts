@@ -43,7 +43,7 @@ export async function POST(
     const {
       userName,
       rating,
-      text,
+      text="",
       images = [],
       videos = [],
       userId,
